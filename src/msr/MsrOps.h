@@ -27,7 +27,6 @@ namespace MsrOps {
     IMT_ErrCode applyMisc(const SetupPackage& package);
     IMT_ErrCode applyCoreVF(const SetupPackage& package);
 
-    void applyTest1(int pCores, int eCores);
 }
 
 

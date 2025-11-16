@@ -189,6 +189,16 @@ union alignas (8) MSR_TURBO_RATIO_LIMIT {
 };
 #define MSR_TURBO_RATIO_LIMIT_ADDR 0x1ad
 
+// Address: 620H Ring Ratio Limits
+union alignas (8) MSR_RING_RATIO  {
+    uint64_t value;
+    struct {
+        uint64_t RingRatioMax  : 8;
+        uint64_t RingRatioMin  : 8;
+    };
+};
+#define MSR_RING_RATIO_ADDR 0x620
+
 // Address: 650H Secondary Maximum Turbo Ratio Limit
 union alignas (8) MSR_SECONDARY_TURBO_RATIO_LIMIT {
     uint64_t value;

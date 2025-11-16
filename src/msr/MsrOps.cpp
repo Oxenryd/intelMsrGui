@@ -84,11 +84,15 @@ SetupPackage MsrOps::readCurrentAsPackage() {
     // }
 
     // Ratios and misc
-    auto pCoreRatios{MSR::readAndReturn<MSR_TURBO_RATIO_LIMIT>(
+    const auto ringRatios{MSR::readAndReturn<MSR_RING_RATIO>(cores.first[0], MSR_RING_RATIO_ADDR)};
+    const auto pCoreRatios{MSR::readAndReturn<MSR_TURBO_RATIO_LIMIT>(
         cores.first[0], MSR_TURBO_RATIO_LIMIT_ADDR )};
-    auto eCoreRatios{MSR::readAndReturn<MSR_SECONDARY_TURBO_RATIO_LIMIT>(
+    const auto eCoreRatios{MSR::readAndReturn<MSR_SECONDARY_TURBO_RATIO_LIMIT>(
         cores.second[0], MSR_SECONDARY_TURBO_RATIO_LIMIT_ADDR )};
-    auto powerCtl{MSR::readAndReturn<MSR_POWER_CTL>(cores.first[0], MSR_POWER_CTL_ADDR)};
+    const auto powerCtl{MSR::readAndReturn<MSR_POWER_CTL>(cores.first[0], MSR_POWER_CTL_ADDR)};
+
+    pkg.RingMin.set(ringRatios.RingRatioMin);
+    pkg.RingMax.set(ringRatios.RingRatioMax);
 
     pkg.PCore_RatioGroup_1.value.set(pCoreRatios.Maximum_Ratio_Limit_1_Core);
     pkg.PCore_RatioGroup_2.value.set(pCoreRatios.Maximum_Ratio_Limit_2_Core);
@@ -191,66 +195,6 @@ IMT_ErrCode MsrOps::deletePreset(const std::string &presetFilePath, const std::s
     }
 
     return IMT_ErrCode::NoPresetsFound;
-}
-
-void MsrOps::applyTest1(int pCores, int eCores) {
-    for (int i = 0; i < pCores; i++) {
-        auto pTurboLimits{MSR::readAndReturn<MSR_TURBO_RATIO_LIMIT>
-            (i, MSR_TURBO_RATIO_LIMIT_ADDR)};
-
-        pTurboLimits.Maximum_Ratio_Limit_1_Core = 50;
-        pTurboLimits.Maximum_Ratio_Limit_2_Core = 50;
-        pTurboLimits.Maximum_Ratio_Limit_3_Core = 47;
-        pTurboLimits.Maximum_Ratio_Limit_4_Core = 46;
-        pTurboLimits.Maximum_Ratio_Limit_5_Core = 45;
-        pTurboLimits.Maximum_Ratio_Limit_6_Core = 44;
-        pTurboLimits.Maximum_Ratio_Limit_7_Core = 43;
-        pTurboLimits.Maximum_Ratio_Limit_8_Core = 43;
-        MSR::write_msr(i, MSR_TURBO_RATIO_LIMIT_ADDR, &pTurboLimits.value);
-    }
-
-    for (int i = pCores; i < pCores + eCores; i++) {
-        auto eTurboLimits{MSR::readAndReturn<MSR_SECONDARY_TURBO_RATIO_LIMIT>
-            (i, MSR_SECONDARY_TURBO_RATIO_LIMIT_ADDR)};
-
-        eTurboLimits.Maximum_Ratio_Limit_1_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_2_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_3_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_4_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_5_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_6_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_7_Core = 33;
-        eTurboLimits.Maximum_Ratio_Limit_8_Core = 33;
-        MSR::write_msr(i, MSR_SECONDARY_TURBO_RATIO_LIMIT_ADDR, &eTurboLimits.value);
-    }
-
-
-    for (int i = 0; i < pCores + eCores; i++) {
-        auto pwrCtrl{MSR::readAndReturn<MSR_POWER_CTL>(i, MSR_POWER_CTL_ADDR)};
-        pwrCtrl.C1E_Enable = 0;
-        pwrCtrl.Disable_Energy_Eff_Optimization = 1;
-        MSR::write_msr(i, MSR_POWER_CTL_ADDR, &pwrCtrl.value);
-    }
-
-    //IA32_HWP_REQUEST
-    for (int i = 0; i < pCores + eCores; i++) {
-        auto hwp{MSR::readAndReturn<IA32_HWP_REQUEST>(i, IA32_HWP_REQUEST_ADDR)};
-        hwp.Package_Control = 1;
-        hwp.Maximum_Valid = 0;
-        hwp.Desired_Valid = 0;
-        hwp.Minimum_Valid = 0;
-        hwp.EPP_Valid = 0;
-        MSR::write_msr(i, IA32_HWP_REQUEST_ADDR, &hwp.value);
-    }
-
-    for (int i = 0; i < pCores + eCores; i++) {
-        auto hwpPkg{MSR::readAndReturn<IA32_HWP_REQUEST_PKG>(i, IA32_HWP_REQUEST_PKG_ADDR)};
-        hwpPkg.Maximum_Performance = 68;
-        hwpPkg.Minimum_Performance = 68;
-        hwpPkg.Desired_Performance = 68;
-        hwpPkg.Energy_Performance_Preference = 0;
-        MSR::write_msr(i, IA32_HWP_REQUEST_PKG_ADDR, &hwpPkg.value);
-    }
 }
 
 IMT_ErrCode MsrOps::saveCurrentSetting(
@@ -475,7 +419,6 @@ IMT_ErrCode MsrOps::applyHWP(const SetupPackage& package) {
 
 IMT_ErrCode MsrOps::applyMisc(const SetupPackage& package) {
 
-
     for (int i = 0; i < package.NumPCores + package.NumPCores; ++i) {
         MSR_POWER_CTL pCtl{};
         auto readResult = MSR::read_msr(i, MSR_POWER_CTL_ADDR, &pCtl.value);
@@ -484,6 +427,13 @@ IMT_ErrCode MsrOps::applyMisc(const SetupPackage& package) {
         pCtl.C1E_Enable = package.EnhancedHalt_C1E.getValue();
         pCtl.Disable_Energy_Eff_Optimization = package.Disable_EE_Optimization.getValue();
         auto writeResult = MSR::write_msr(i, MSR_POWER_CTL_ADDR, &pCtl.value);
+        if (!writeResult)
+            return IMT_ErrCode::MsrWriteError;
+
+        MSR_RING_RATIO ring{};
+        ring.RingRatioMin = package.RingMin.getValue();
+        ring.RingRatioMax = package.RingMax.getValue();
+        writeResult = MSR::write_msr(i, MSR_RING_RATIO_ADDR, &ring.value);
         if (!writeResult)
             return IMT_ErrCode::MsrWriteError;
     }

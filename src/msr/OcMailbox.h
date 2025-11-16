@@ -37,6 +37,8 @@
 #define VF_READ_CMD         0x12
 #define VF_WRITE_CMD        0x13
 
+#define RING_DOWN_CMD       0x19
+
 #define DOMAIN_CORE         0
 #define DOMAIN_IGPU         1
 #define DOMAIN_CACHE        2

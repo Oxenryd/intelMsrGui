@@ -141,7 +141,22 @@ constexpr ArgMapping ARGS_DEF[] {
     {"-hwpdes", ArgType::HWP_PKG_Desired, 1},
     {"-hwpmin", ArgType::HWP_PKG_Minimum, 1},
     {"-hwpmax", ArgType::HWP_PKG_Maximum, 1},
-    {"-hwpepp", ArgType::HWP_PKG_EPP, 1}
+    {"-hwpepp", ArgType::HWP_PKG_EPP, 1},
+
+    {"-rMin", ArgType::RingMin, 1},
+    {"-rMax", ArgType::RingMax, 1},
+
+    {"-vf1", ArgType::VF_CoreOffsetPoint1, 1},
+    {"-vf2", ArgType::VF_CoreOffsetPoint1, 2},
+    {"-vf3", ArgType::VF_CoreOffsetPoint1, 3},
+    {"-vf4", ArgType::VF_CoreOffsetPoint1, 4},
+    {"-vf5", ArgType::VF_CoreOffsetPoint1, 5},
+    {"-vf6", ArgType::VF_CoreOffsetPoint1, 6},
+    {"-vf7", ArgType::VF_CoreOffsetPoint1, 7},
+    {"-vf8", ArgType::VF_CoreOffsetPoint1, 8},
+    {"-vf9", ArgType::VF_CoreOffsetPoint1, 9},
+    {"-vf10", ArgType::VF_CoreOffsetPoint1, 10},
+    {"-vf11", ArgType::VF_CoreOffsetPoint1, 11},
 };
 constexpr size_t NUM_ARGS_DEF = std::size(ARGS_DEF);
 
@@ -256,6 +271,8 @@ struct SetupPackage {
         j.push_back(param_to_json(VF_CoreOffsetPoint9));
         j.push_back(param_to_json(VF_CoreOffsetPoint10));
         j.push_back(param_to_json(VF_CoreOffsetPoint11));
+        j.push_back(param_to_json(RingMin));
+        j.push_back(param_to_json(RingMax));
 
         auto p = nlohmann::json::object();
         auto e = nlohmann::json::object();
@@ -321,6 +338,9 @@ struct SetupPackage {
     ImtParam<ArgType::VF_CoreOffsetPoint9, double> VF_CoreOffsetPoint9{0.0};
     ImtParam<ArgType::VF_CoreOffsetPoint10, double> VF_CoreOffsetPoint10{0.0};
     ImtParam<ArgType::VF_CoreOffsetPoint11, double> VF_CoreOffsetPoint11{0.0};
+
+    ImtParam<ArgType::RingMin, uint64_t> RingMin{static_cast<uint64_t>(-1)};
+    ImtParam<ArgType::RingMax, uint64_t> RingMax{static_cast<uint64_t>(-1)};
 
     [[nodiscard]] std::vector<double> getVfCoreOffsetPoints() const {
         std::vector<double> vfCoreOffsetPoints;
@@ -538,6 +558,11 @@ struct SetupPackage {
                         VF_CoreOffsetPoint10.set(obj[VALUE].get<double>()); break;
                     case ArgType::VF_CoreOffsetPoint11:
                         VF_CoreOffsetPoint11.set(obj[VALUE].get<double>()); break;
+
+                    case ArgType::RingMin:
+                        RingMin.set(obj[VALUE].get<uint64_t>()); break;
+                    case ArgType::RingMax:
+                        RingMax.set(obj[VALUE].get<uint64_t>()); break;
                 }
             }
         }

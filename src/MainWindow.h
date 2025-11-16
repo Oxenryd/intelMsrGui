@@ -7,6 +7,7 @@
 
 #include <QMainWindow>
 #include <vector>
+
 #include "msr/Parameters.hpp"
 
 
@@ -26,6 +27,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    void updateTrayMenu(QMenu* menu);
+
 private:
     Ui::MainWindow* ui;
     std::vector<QLineEdit*> m_vfEdits;
@@ -42,10 +45,14 @@ private:
     std::unordered_map<std::string, SetupPackage> m_presetMap;
 
     void init();
+    void checkPresetAutostart();
     bool validateEntries(SetupPackage* outPkg) const;
     void readData(const SetupPackage& pkg) const;
     void updateStatString();
     void readPresets();
+    void updateAutostartCheck() const;
+    static bool getAutostartPreset(QString* outStr);
+    static bool setAutostartPreset(const QString& presetName);
 
 private Q_SLOTS:
     void onVfSliderValueChanged(int value, int vfPoint) const;
@@ -57,6 +64,8 @@ private Q_SLOTS:
     void onSavePressed() const;
     void onDeletePressed() const;
     void onPresetComboClicked(int index) const;
+    void onAutostartCheckClicked(bool checked) const;
+
 };
 
 #endif //INTEL_MSR_GUI_MAINWINDOW_H

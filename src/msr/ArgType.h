@@ -66,6 +66,9 @@ enum class ArgType : uint8_t {
     VF_CoreOffsetPoint10,
     VF_CoreOffsetPoint11,
 
+    RingMin = 120,
+    RingMax,
+
     Unknown = 255
 };
 

@@ -14,6 +14,8 @@
 #include <QTimer>
 #include <QStandardPaths>
 #include <QDir>
+#include <QMenu>
+#include <QMessageBox>
 
 #include "msr/IntelTypes.hpp"
 #include "msr/Msr.hpp"
@@ -30,10 +32,34 @@ MainWindow::MainWindow(QWidget* parent) :
     setMinimumSize(size());
     setMaximumSize(size());
     init();
+    checkPresetAutostart();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::updateTrayMenu(QMenu *menu) {
+
+    menu->clear();
+    QStringList names;
+    for (int i = 0; i < ui->presetCombo->count(); ++i) {
+        names << ui->presetCombo->itemText(i);
+    }
+
+    for (const QString &name : names) {
+        QAction *act = menu->addAction(name);
+        connect(act, &QAction::triggered,
+            this, [this, name]() {
+                const SetupPackage pkg = m_presetMap[name.toStdString()];
+                if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
+                    QMessageBox::critical(nullptr,
+                      "IntelMsrGui",
+                      "Could load preset!");
+                }
+        });
+    }
+
 }
 
 void MainWindow::init() {
@@ -125,6 +151,9 @@ void MainWindow::init() {
         m_vfEdits[i]->setValidator(v1);
     }
 
+    ui->ringMaxEdit->setValidator(new QIntValidator(8, 99, ui->ringMaxEdit));
+    ui->ringMinEdit->setValidator(new QIntValidator(8, 99, ui->ringMinEdit));
+
     for (int i = 0; i < 8; ++i) {
         m_pCoreEdits[i]->setValidator(new QIntValidator(8, 128, m_pCoreEdits[i]));
         m_eCoreEdits[i]->setValidator(new QIntValidator(8, 128, m_eCoreEdits[i]));
@@ -172,8 +201,6 @@ void MainWindow::init() {
                 QString text = ui->presetCombo->itemText(i);
                 if (text == ui->presetNameEdit->text()) {
                     ui->presetCombo->setCurrentIndex(i);
-                    //const SetupPackage pkg = m_presetMap[ui->presetCombo->currentText().toStdString()];
-                    //readData(pkg);
                     ui->presetNameEdit->clear();
                     break;
                 }
@@ -185,8 +212,6 @@ void MainWindow::init() {
             onDeletePressed();
             readPresets();
             ui->presetCombo->setCurrentIndex(0);
-            //const SetupPackage pkg = m_presetMap[ui->presetCombo->currentText().toStdString()];
-            //readData(pkg);
         });
 
     connect(ui->presetCombo, &QComboBox::activated,
@@ -200,8 +225,30 @@ void MainWindow::init() {
         m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value() / 10, 'f', 1));
     }
 
+    connect(ui->autostartCheck, &QCheckBox::toggled,
+        this, [this](bool checked) {
+            onAutostartCheckClicked(checked);
+        });
+
     updateStatString();
     readPresets();
+    updateAutostartCheck();
+}
+
+void MainWindow::checkPresetAutostart() {
+    QString autostart{};
+    if (!getAutostartPreset(&autostart) || autostart.isEmpty())
+        return;
+
+    readPresets();
+    auto pStr = autostart.toStdString();
+    for (auto& pair : m_presetMap) {
+        if (pStr == pair.first) {
+            MsrOps::apply(pair.second);
+            readData(pair.second);
+            break;
+        }
+    }
 }
 
 void MainWindow::readData(const SetupPackage& pkg) const {
@@ -221,6 +268,9 @@ void MainWindow::readData(const SetupPackage& pkg) const {
         m_vfSliders[i]->setValue(static_cast<int>(offset * 10));
         m_vfEdits[i]->setText(QString::number(offset, 'f', 1));
     }
+
+    ui->ringMaxEdit->setText(QString::number(pkg.RingMax.getValue()));
+    ui->ringMinEdit->setText(QString::number(pkg.RingMin.getValue()));
 
     // globals
     ui->offsetSlider_0->setValue(std::lround(pkg.V_Offset_VCore.getValue() * 10));
@@ -253,7 +303,7 @@ void MainWindow::updateStatString() {
     }
 
     // Find which are P-Cores / E-Cores
-    if (m_pCores.size() == 0) {
+    if (m_pCores.empty()) {
         m_pCores.clear();
         m_eCores.clear();
         for (auto i : physicalCores) {
@@ -312,6 +362,59 @@ void MainWindow::readPresets() {
         return; // todo
 }
 
+void MainWindow::updateAutostartCheck() const {
+
+    if (ui->presetCombo->currentIndex() < 0)
+        return;
+
+    QString autostartPreset{};
+    if (getAutostartPreset(&autostartPreset) && autostartPreset == ui->presetCombo->currentText()) {
+        ui->autostartCheck->setChecked(true);
+    } else
+        ui->autostartCheck->setChecked(false);
+}
+
+bool MainWindow::getAutostartPreset(QString* outStr) {
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    if (!QDir().mkpath(dir)) {
+        return false; // todo
+    }
+    QString filePath = dir + "/autostartPreset.conf";
+
+    std::filesystem::path presetPath = filePath.toStdString();
+    std::ifstream inFile{presetPath};
+    if (!inFile) {
+        return false; // todo
+    }
+
+    std::string line;
+    if (!std::getline(inFile, line))
+        return false; // todo
+
+    outStr->append(line);
+
+    return true;
+}
+
+bool MainWindow::setAutostartPreset(const QString &presetName) {
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    if (!QDir().mkpath(dir)) {
+        return false; // todo
+    }
+
+    QString filePath = dir + "/autostartPreset.conf";
+    std::filesystem::path presetPath = filePath.toStdString();
+    std::ofstream outFile{presetPath};
+    if (!outFile)
+        return false; //todo
+
+    outFile.clear();
+
+    outFile << presetName.toStdString();
+
+    return true;
+}
+
 bool MainWindow::validateEntries(SetupPackage* outPkg) const {
     auto vfOffsets = std::vector<double>(11);
     for (int i = 0; i < 11; ++i) {
@@ -340,14 +443,14 @@ bool MainWindow::validateEntries(SetupPackage* outPkg) const {
     for (int i = 0; i < 8; ++i) {
         bool ok = false;
         const auto pValue = m_pCoreEdits[i]->text().toInt(&ok);
-        if (!ok || pValue < 8 || pValue> 128)
+        if (!ok || pValue> 99)
             return false;
 
         pRatios[i] = pValue;
 
         ok = false;
         const auto eValue = m_eCoreEdits[i]->text().toInt(&ok);
-        if (!ok || eValue < 8 || eValue> 128)
+        if (!ok || eValue> 99)
             return false;
 
         eRatios[i] = eValue;
@@ -414,6 +517,8 @@ void MainWindow::onApplyPressed() const {
     pkg.HWP_Desired.set(0);
     pkg.HWP_Minimum.set(1);
     pkg.HWP_Maximum.set(255);
+    pkg.RingMin.set(ui->ringMinEdit->text().toInt());
+    pkg.RingMax.set(ui->ringMaxEdit->text().toInt());
     if (validateEntries(&pkg)) {
         if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
             std::cout << "Error applying."; // todo
@@ -436,6 +541,8 @@ void MainWindow::onSavePressed() const {
     pkg.HWP_Desired.set(0);
     pkg.HWP_Minimum.set(1);
     pkg.HWP_Maximum.set(255);
+    pkg.RingMin.set(ui->ringMinEdit->text().toInt());
+    pkg.RingMax.set(ui->ringMaxEdit->text().toInt());
     if (!validateEntries(&pkg)) {
         return; //todo
     }
@@ -479,6 +586,20 @@ void MainWindow::onPresetComboClicked(int index) const {
     const std::string str = ui->presetCombo->currentText().toStdString();
     const SetupPackage pkg = m_presetMap.at(str);
     readData(pkg);
+    updateAutostartCheck();
+}
+
+void MainWindow::onAutostartCheckClicked(bool checked) const {
+
+    if (ui->presetCombo->currentIndex() < 0 || m_presetMap.size() < 1)
+        ui->autostartCheck->setChecked(false);
+
+    if (checked && ui->presetCombo->currentIndex() >= 0) {
+        setAutostartPreset(ui->presetCombo->currentText());
+        ui->autostartCheck->setChecked(true);
+    } else if (!checked && ui->presetCombo->currentIndex() >= 0) {
+        setAutostartPreset("");
+    }
 }
 
 
