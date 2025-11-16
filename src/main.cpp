@@ -16,16 +16,16 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName("intelMsrGui");
     QApplication::setQuitOnLastWindowClosed(false);
-    QIcon icon{":icon/icon.png"};
+    const QIcon icon{":icon/icon.png"};
     a.setWindowIcon(icon);
 
-    if (!isRoot()) {
-        QMessageBox::critical(nullptr,
-                              "IntelMsrGui",
-                              "This tool needs proper MSR permissions.\n"
-                              "Please run it via sudo/pkexec or set up permissions.");
-        return 1;
-    }
+    // if (!isRoot()) {
+    //     QMessageBox::critical(nullptr,
+    //                           "IntelMsrGui",
+    //                           "This tool needs proper MSR permissions.\n"
+    //                           "Please run it via sudo/pkexec or set up permissions.");
+    //     return 1;
+    // }
     bool startHidden = true;
     for (int i = 0; i < argc; ++i) {
         if (std::strcmp(argv[i], "--show") == 0) {
