@@ -7,7 +7,6 @@
 #include "msr/MsrOps.h"
 #include "msr/OcMailbox.h"
 
-
 #include <cpuid.h>
 #include <thread>
 
@@ -19,7 +18,6 @@
 #include "msr/IntelTypes.hpp"
 #include "msr/Msr.hpp"
 #include "msr/IMT_ErrCode.h"
-
 
 MainWindow::MainWindow(QWidget* parent) :
         QMainWindow(parent),
@@ -199,7 +197,7 @@ void MainWindow::init() {
     const SetupPackage sPack = MsrOps::readCurrentAsPackage();
     readData(sPack);
     for (int i = 0; i < 6; ++i) {
-        m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value(), 'f', 1));
+        m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value() / 10, 'f', 1));
     }
 
     updateStatString();
