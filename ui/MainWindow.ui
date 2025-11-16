@@ -1,0 +1,1939 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>940</width>
+    <height>695</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>intelMsrGui</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/icon/icon.png</normaloff>:/icon/icon.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>84</y>
+      <width>671</width>
+      <height>361</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>V/F Curve</string>
+    </property>
+    <widget class="QSlider" name="slider_11">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_2">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_5">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_7">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_3">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_6">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_1">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_8">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_10">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_4">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="slider_9">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>90</y>
+       <width>16</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TickPosition::NoTicks</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_1">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_2">
+     <property name="geometry">
+      <rect>
+       <x>65</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_3">
+     <property name="geometry">
+      <rect>
+       <x>125</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_4">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_5">
+     <property name="geometry">
+      <rect>
+       <x>245</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_6">
+     <property name="geometry">
+      <rect>
+       <x>305</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_7">
+     <property name="geometry">
+      <rect>
+       <x>365</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_8">
+     <property name="geometry">
+      <rect>
+       <x>425</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_9">
+     <property name="geometry">
+      <rect>
+       <x>485</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_10">
+     <property name="geometry">
+      <rect>
+       <x>545</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="freqPointLbl_11">
+     <property name="geometry">
+      <rect>
+       <x>605</x>
+       <y>304</y>
+       <width>65</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1800</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="vfResetBtn">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>327</y>
+       <width>92</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&amp;Reset</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Offset (mV)</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>171</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Frequency Point (MHz)</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_1">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>73</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>133</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_4">
+     <property name="geometry">
+      <rect>
+       <x>193</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_5">
+     <property name="geometry">
+      <rect>
+       <x>253</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_6">
+     <property name="geometry">
+      <rect>
+       <x>313</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_7">
+     <property name="geometry">
+      <rect>
+       <x>373</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_8">
+     <property name="geometry">
+      <rect>
+       <x>433</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_9">
+     <property name="geometry">
+      <rect>
+       <x>493</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_10">
+     <property name="geometry">
+      <rect>
+       <x>553</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="vfEdit_11">
+     <property name="geometry">
+      <rect>
+       <x>613</x>
+       <y>60</y>
+       <width>51</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::InputMethodHint::ImhDigitsOnly|Qt::InputMethodHint::ImhPreferNumbers</set>
+     </property>
+     <property name="text">
+      <string>-250.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="cpuLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Intel bla bla bla 13900K</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="vidLabel">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>10</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>VID: 0.000V</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>454</y>
+      <width>671</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Global Offsets</string>
+    </property>
+    <widget class="QSlider" name="offsetSlider_0">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>35</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl">
+     <property name="geometry">
+      <rect>
+       <x>17</x>
+       <y>34</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>VCore</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_0">
+     <property name="geometry">
+      <rect>
+       <x>257</x>
+       <y>33</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_2">
+     <property name="geometry">
+      <rect>
+       <x>17</x>
+       <y>65</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>IGPU</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QSlider" name="offsetSlider_1">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>65</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_1">
+     <property name="geometry">
+      <rect>
+       <x>257</x>
+       <y>63</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_3">
+     <property name="geometry">
+      <rect>
+       <x>17</x>
+       <y>93</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Cache</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_2">
+     <property name="geometry">
+      <rect>
+       <x>257</x>
+       <y>92</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="offsetSlider_2">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>94</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_4">
+     <property name="geometry">
+      <rect>
+       <x>17</x>
+       <y>121</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>System Agent</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_3">
+     <property name="geometry">
+      <rect>
+       <x>257</x>
+       <y>120</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="offsetSlider_3">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>122</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_5">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>31</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Analog I/O</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_4">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>30</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="offsetSlider_4">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>32</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_6">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>61</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Digital I/O</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_5">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>60</y>
+       <width>81</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-150.1 mV</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="offsetSlider_5">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>62</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>-3072</number>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="globalResetBtn_2">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>110</y>
+       <width>92</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&amp;Reset</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="clocksFirstCheck">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>112</y>
+       <width>221</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Apply clocks before voltages</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="applyBtn">
+    <property name="geometry">
+     <rect>
+      <x>581</x>
+      <y>634</y>
+      <width>101</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Apply</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>614</y>
+      <width>561</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>HWP</string>
+    </property>
+    <widget class="QCheckBox" name="hwpCheck">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>35</y>
+       <width>121</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>HWP Enabled</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_7">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>37</y>
+       <width>41</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>EPP</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eppEdit">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>33</y>
+       <width>41</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>128</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="hwpMinEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>33</y>
+       <width>41</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>128</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_8">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>37</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Minimum</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="globalLbl_9">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>37</y>
+       <width>71</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Maximum</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="hwpMaxEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>500</x>
+       <y>33</y>
+       <width>41</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>128</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>14</y>
+      <width>241</width>
+      <height>551</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Max Turbo Ratio</string>
+    </property>
+    <widget class="QLabel" name="offsetLbl_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>73</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1 Core Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_1">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>96</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>146</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>123</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>2 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>173</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>3 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>196</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_9">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>223</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>4 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_4">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>246</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_10">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>73</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>5 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_5">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>96</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_11">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>123</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>6 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_6">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>146</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_12">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>173</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>7 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_7">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>196</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_13">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>223</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>8 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pCoreEdit_8">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>246</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_14">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>37</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>P-Cores</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>57</y>
+       <width>221</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>290</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>E-Cores</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>221</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_16">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>481</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>8 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_5">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>354</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_1">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>354</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_7">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>454</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_17">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>431</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>7 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_8">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>504</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_18">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>381</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>2 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_19">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>381</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>6 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_20">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>331</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1 Core Active</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_21">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>481</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>4 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_4">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>504</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>404</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_22">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>431</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>3 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="offsetLbl_23">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>331</y>
+       <width>111</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>5 Cores Active</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_6">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>404</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="eCoreEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>454</y>
+       <width>50</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>-250.4</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_5">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>574</y>
+      <width>241</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Misc</string>
+    </property>
+    <widget class="QCheckBox" name="c1eCheck">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>14</x>
+       <y>40</y>
+       <width>211</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>C1E Enhanced Halt</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="eeoCheck">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>14</x>
+       <y>70</y>
+       <width>211</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Energy Efficient Optimization</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="powLabel">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>10</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Power: 100.00W</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="tempLabel">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>10</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pkg Temp: 60°</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="pCoreRatio">
+    <property name="geometry">
+     <rect>
+      <x>14</x>
+      <y>50</y>
+      <width>141</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>P-Core 0 Ratio: 27x</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="eCoreRatio">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>50</y>
+      <width>131</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>E-Core 0 Ratio: 8x</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="presetCombo">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>40</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="autostartCheck">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>70</y>
+      <width>131</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load on startup</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addPresetBtn">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>40</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delPresetBtn">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>40</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Delete</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="presetNameEdit">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>70</y>
+      <width>221</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <action name="action_Save_Preset">
+   <property name="text">
+    <string>&amp;Save Preset</string>
+   </property>
+  </action>
+  <action name="action_Load_Preset">
+   <property name="text">
+    <string>&amp;Load Preset...</string>
+   </property>
+  </action>
+  <action name="action_hr">
+   <property name="text">
+    <string>&amp;hr</string>
+   </property>
+  </action>
+  <action name="action_Close">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+  </action>
+  <action name="action_Autostart">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Load on Startup</string>
+   </property>
+  </action>
+  <action name="action_Close_2">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
