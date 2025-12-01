@@ -17,21 +17,20 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("intelMsrGui");
     QApplication::setQuitOnLastWindowClosed(false);
     const QIcon icon{":icon/icon.png"};
-    a.setWindowIcon(icon);
+    QApplication::setWindowIcon(icon);
 
-    // if (!isRoot()) {
-    //     QMessageBox::critical(nullptr,
-    //                           "IntelMsrGui",
-    //                           "This tool needs proper MSR permissions.\n"
-    //                           "Please run it via sudo/pkexec or set up permissions.");
-    //     return 1;
-    // }
     bool startHidden = true;
+
+#ifdef DEBUG
+    startHidden = false;
+#else
+
     for (int i = 0; i < argc; ++i) {
         if (std::strcmp(argv[i], "--show") == 0) {
             startHidden = false;
         }
     }
+#endif
 
     MainWindow w;
     w.hide();

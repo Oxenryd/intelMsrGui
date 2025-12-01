@@ -226,7 +226,7 @@ void MainWindow::init() {
     }
 
     connect(ui->autostartCheck, &QCheckBox::toggled,
-        this, [this](bool checked) {
+        this, [this](const bool checked) {
             onAutostartCheckClicked(checked);
         });
 
@@ -292,8 +292,14 @@ void MainWindow::updateStatString() {
 
     // Find physical cpus
     unsigned int logicalCores = std::thread::hardware_concurrency();
-    if (logicalCores == 0)
-        return; // todo
+    if (logicalCores == 0) {
+        QMessageBox::critical(nullptr,
+                      "IntelMsrGui",
+                      "System reports 0 logical cores.\n"
+                      "This is not supposed to happen.");
+        return;
+    }
+
     std::vector<int> physicalCores;
     for (int i = 0; i < logicalCores; i++) {
         std::filesystem::path dir = std::format("/dev/cpu/{}", i);
@@ -347,7 +353,12 @@ void MainWindow::updateStatString() {
 void MainWindow::readPresets() {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (!QDir().mkpath(dir)) {
-        return; // todo
+        auto errStr = std::format("Could not create directory: {}", dir.toStdString());
+        auto qErr = QString{errStr.c_str()};
+        QMessageBox::critical(nullptr,
+              "IntelMsrGui",
+              qErr);
+        return;
     }
     QString filePath = dir + "/preset.conf";
     m_presetMap.clear();
@@ -359,7 +370,9 @@ void MainWindow::readPresets() {
             ui->presetCombo->addItem(itemStr, data);
         }
     } else
-        return; // todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not read preset!");
 }
 
 void MainWindow::updateAutostartCheck() const {
@@ -377,20 +390,29 @@ void MainWindow::updateAutostartCheck() const {
 bool MainWindow::getAutostartPreset(QString* outStr) {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (!QDir().mkpath(dir)) {
-        return false; // todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not read preset directory!");
+        return false;
     }
     QString filePath = dir + "/autostartPreset.conf";
 
     std::filesystem::path presetPath = filePath.toStdString();
     std::ifstream inFile{presetPath};
     if (!inFile) {
-        return false; // todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not read preset file!");
+        return false;
     }
 
     std::string line;
-    if (!std::getline(inFile, line))
-        return false; // todo
-
+    if (!std::getline(inFile, line)) {
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not read preset file line!");
+        return false;
+    }
     outStr->append(line);
 
     return true;
@@ -399,14 +421,21 @@ bool MainWindow::getAutostartPreset(QString* outStr) {
 bool MainWindow::setAutostartPreset(const QString &presetName) {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (!QDir().mkpath(dir)) {
-        return false; // todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not write to preset file directory!");
+        return false;
     }
 
     QString filePath = dir + "/autostartPreset.conf";
     std::filesystem::path presetPath = filePath.toStdString();
     std::ofstream outFile{presetPath};
-    if (!outFile)
-        return false; //todo
+    if (!outFile) {
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not write preset file!");
+        return false;
+    }
 
     outFile.clear();
 
@@ -521,17 +550,26 @@ void MainWindow::onApplyPressed() const {
     pkg.RingMax.set(ui->ringMaxEdit->text().toInt());
     if (validateEntries(&pkg)) {
         if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
-            std::cout << "Error applying."; // todo
+            QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "MSRs not written correctly.");
         }
         const SetupPackage sPack = MsrOps::readCurrentAsPackage();
         readData(sPack);
-    }
+    } else
+        QMessageBox::critical(nullptr,
+        "IntelMsrGui",
+        "Entries failed validation.");
 }
 
 void MainWindow::onSavePressed() const {
 
-    if (ui->presetNameEdit->text().isEmpty())
-        return; // todo
+    if (ui->presetNameEdit->text().isEmpty()) {
+        QMessageBox::critical(nullptr,
+        "IntelMsrGui",
+        "Must enter Preset name.");
+        return;
+    }
 
     SetupPackage pkg{};
     pkg.NumECores = m_eCores.size();
@@ -544,12 +582,18 @@ void MainWindow::onSavePressed() const {
     pkg.RingMin.set(ui->ringMinEdit->text().toInt());
     pkg.RingMax.set(ui->ringMaxEdit->text().toInt());
     if (!validateEntries(&pkg)) {
-        return; //todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Entries failed validation.");
+        return;
     }
 
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (!QDir().mkpath(dir)) {
-        return; // todo
+        QMessageBox::critical(nullptr,
+             "IntelMsrGui",
+             "Could not write preset directory.");
+        return;
     }
     QString filePath = dir + "/preset.conf";
     if (MsrOps::saveCurrentSetting(
@@ -557,7 +601,9 @@ void MainWindow::onSavePressed() const {
         ui->presetNameEdit->text().toStdString(),
         pkg) != IMT_ErrCode::OK)
     {
-        std::cout << "Error writing."; // todo
+        QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Could not write preset.");
     }
 
 }
