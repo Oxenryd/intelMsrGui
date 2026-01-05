@@ -2,7 +2,9 @@
 
 **IntelMsrGui** is a small GUI tool I built for myself to experiment with and control **Intel CPU MSRs**, mainly for **voltage tuning** on **Skylake and newer Intel CPUs**.
 
-![alt text](https://www.dropbox.com/scl/fi/453g7jod0j37wusxaqqw7/Sk-rmbild_20260105_181522.png?rlkey=bvqgvp2q5bs8akje7w646j8q3&st=8n0d0k1t&dl=0 "IntelMsrGui")
+![alt text][logo]
+
+[logo]: https://www.dropbox.com/scl/fi/453g7jod0j37wusxaqqw7/Sk-rmbild_20260105_181522.png?rlkey=bvqgvp2q5bs8akje7w646j8q3&st=8n0d0k1t&dl=0 "Screenshot"
 
 It’s an evolution of an earlier command-line project of mine (**Intel-MSR-Tool**), where I wanted something more visual and a bit more convenient to use day-to-day.
 The UI is built with **Qt 6**.
