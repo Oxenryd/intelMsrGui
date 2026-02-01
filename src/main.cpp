@@ -7,7 +7,7 @@
 
 #include "MainWindow.h"
 
-
+//#define DEBUG
 
 bool isRoot() { return geteuid() == 0; }
 

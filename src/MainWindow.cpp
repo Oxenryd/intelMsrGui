@@ -408,9 +408,6 @@ bool MainWindow::getAutostartPreset(QString* outStr) {
 
     std::string line;
     if (!std::getline(inFile, line)) {
-        QMessageBox::critical(nullptr,
-            "IntelMsrGui",
-            "Could not read preset file line!");
         return false;
     }
     outStr->append(line);
