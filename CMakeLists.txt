@@ -16,6 +16,8 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
+find_package(KF6StatusNotifierItem REQUIRED)
+
 add_executable(intel_msr_gui
         src/main.cpp
 
@@ -36,5 +38,6 @@ target_link_libraries(intel_msr_gui
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        KF6::StatusNotifierItem
 )
 

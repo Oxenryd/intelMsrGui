@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QSystemTrayIcon>
-
+#include <KF6/KStatusNotifierItem/KStatusNotifierItem>
 #include "MainWindow.h"
 
 //#define DEBUG
@@ -14,10 +14,16 @@ bool isRoot() { return geteuid() == 0; }
 int main(int argc, char *argv[]) {
 
     QApplication a(argc, argv);
-    QCoreApplication::setApplicationName("intelMsrGui");
-    QApplication::setQuitOnLastWindowClosed(false);
+    a.setApplicationName("intelMsrGui");
+    a.setApplicationDisplayName("Intel MSR Gui");
+    a.setQuitOnLastWindowClosed(false);
+    a.setDesktopFileName("intelMsrGui");
+    KStatusNotifierItem *sni =
+        new KStatusNotifierItem("my-tool-id", &a);
+    sni->setIconByName("utility-terminal"); // Use a standard icon name to test
+    sni->setStatus(KStatusNotifierItem::Active);
     const QIcon icon{":icon/icon.png"};
-    QApplication::setWindowIcon(icon);
+    a.setWindowIcon(icon);
 
     bool startHidden = true;
 
@@ -77,5 +83,5 @@ int main(int argc, char *argv[]) {
             w.updateTrayMenu(presetsMenu);
     });
 
-    return QApplication::exec();
+    return a.exec();
 }
