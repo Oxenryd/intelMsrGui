@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
 struct SetupPackage;
 enum class IMT_ErrCode : uint8_t;

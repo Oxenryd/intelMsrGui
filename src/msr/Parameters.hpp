@@ -157,6 +157,8 @@ constexpr ArgMapping ARGS_DEF[] {
     {"-vf9", ArgType::VF_CoreOffsetPoint1, 9},
     {"-vf10", ArgType::VF_CoreOffsetPoint1, 10},
     {"-vf11", ArgType::VF_CoreOffsetPoint1, 11},
+
+    {"-json", ArgType::Json, 0}
 };
 constexpr size_t NUM_ARGS_DEF = std::size(ARGS_DEF);
 

@@ -164,10 +164,6 @@ IMT_ErrCode MsrOps::readPresets(
         outPresets->insert(std::make_pair(key, SetupPackage{value}));
     }
 
-    // const std::string idx = std::to_string(presetIndex);
-    // if (!force && j.contains(idx))
-    //     return IMT_ErrCode::IndexOccupied;
-
     return IMT_ErrCode::OK;
 }
 

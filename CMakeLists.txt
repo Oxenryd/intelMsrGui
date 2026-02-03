@@ -1,4 +1,19 @@
 cmake_minimum_required(VERSION 4.0)
+
+project(intel_msr_tool)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+
+add_executable(intel_msr_tool
+        src/msr/main.cpp
+        src/msr/CLI.cpp
+        src/msr/MsrOps.cpp
+        src/msr/OcMailbox.cpp
+)
+
 project(intel_msr_gui)
 
 set(CMAKE_CXX_STANDARD 20)

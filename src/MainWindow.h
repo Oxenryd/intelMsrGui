@@ -47,12 +47,14 @@ private:
     void init();
     void checkPresetAutostart();
     bool validateEntries(SetupPackage* outPkg) const;
-    void readData(const SetupPackage& pkg) const;
+    void setUiElementsFromData(const SetupPackage& pkg) const;
     void updateStatString();
     void readPresets();
     void updateAutostartCheck() const;
     static bool getAutostartPreset(QString* outStr);
     static bool setAutostartPreset(const QString& presetName);
+
+    int sendPackage(const SetupPackage& pkg);
 
 private Q_SLOTS:
     void onVfSliderValueChanged(int value, int vfPoint) const;

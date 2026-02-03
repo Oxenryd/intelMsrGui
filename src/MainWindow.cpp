@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QMenu>
 #include <QMessageBox>
+#include <QProcess>
 
 #include "msr/IntelTypes.hpp"
 #include "msr/Msr.hpp"
@@ -220,7 +221,7 @@ void MainWindow::init() {
     });
 
     const SetupPackage sPack = MsrOps::readCurrentAsPackage();
-    readData(sPack);
+    setUiElementsFromData(sPack);
     for (int i = 0; i < 6; ++i) {
         m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value() / 10, 'f', 1));
     }
@@ -245,13 +246,13 @@ void MainWindow::checkPresetAutostart() {
     for (auto& pair : m_presetMap) {
         if (pStr == pair.first) {
             MsrOps::apply(pair.second);
-            readData(pair.second);
+            setUiElementsFromData(pair.second);
             break;
         }
     }
 }
 
-void MainWindow::readData(const SetupPackage& pkg) const {
+void MainWindow::setUiElementsFromData(const SetupPackage& pkg) const {
 
     const auto pGroup = pkg.getPCoreRatioGroups();
     const auto eGroup = pkg.getECoreRatioGroups();
@@ -441,6 +442,7 @@ bool MainWindow::setAutostartPreset(const QString &presetName) {
     return true;
 }
 
+
 bool MainWindow::validateEntries(SetupPackage* outPkg) const {
     auto vfOffsets = std::vector<double>(11);
     for (int i = 0; i < 11; ++i) {
@@ -552,7 +554,7 @@ void MainWindow::onApplyPressed() const {
             "MSRs not written correctly.");
         }
         const SetupPackage sPack = MsrOps::readCurrentAsPackage();
-        readData(sPack);
+        setUiElementsFromData(sPack);
     } else
         QMessageBox::critical(nullptr,
         "IntelMsrGui",
@@ -628,7 +630,7 @@ void MainWindow::onPresetComboClicked(int index) const {
     ui->presetCombo->setCurrentIndex(index);
     const std::string str = ui->presetCombo->currentText().toStdString();
     const SetupPackage pkg = m_presetMap.at(str);
-    readData(pkg);
+    setUiElementsFromData(pkg);
     updateAutostartCheck();
 }
 
@@ -646,3 +648,22 @@ void MainWindow::onAutostartCheckClicked(bool checked) const {
 }
 
 
+
+
+int MainWindow::sendPackage(const SetupPackage &pkg) {
+    const std::string data = pkg.to_json().dump();
+
+    const auto process = new QProcess(this);
+    QStringList args;
+    args << "./intel_msr_tool -json " << QString::fromStdString(data);
+
+    // pkexec will trigger the system password prompt
+    process->start("pkexec", args);
+
+    int exit = 0;
+    connect(process, &QProcess::finished, [&](int exitCode) {
+        exit = exitCode;
+    });
+
+    return exit;
+}
