@@ -20,7 +20,7 @@
 
 #include "msr/IntelTypes.hpp"
 #include "msr/Msr.hpp"
-#include "msr/IMT_ErrCode.h"
+
 
 MainWindow::MainWindow(QWidget* parent) :
         QMainWindow(parent),
@@ -53,7 +53,8 @@ void MainWindow::updateTrayMenu(QMenu *menu) {
         connect(act, &QAction::triggered,
             this, [this, name]() {
                 const SetupPackage pkg = m_presetMap[name.toStdString()];
-                if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
+
+                if (sendSettingsPackage(pkg) != IMT_ErrCode::OK) {
                     QMessageBox::critical(nullptr,
                       "IntelMsrGui",
                       "Could load preset!");
@@ -171,7 +172,7 @@ void MainWindow::init() {
         });
     }
 
-    ui->cpuLabel->setText(QString(MSR::getCpuName().c_str()));
+    ui->cpuLabel->setText(QString(getCpuName().c_str()));
 
     connect(ui->vfResetBtn, &QPushButton::clicked,
         this, [this] {
@@ -220,7 +221,8 @@ void MainWindow::init() {
         onPresetComboClicked(index);
     });
 
-    const SetupPackage sPack = MsrOps::readCurrentAsPackage();
+    SetupPackage sPack{};
+    getSettingsPackage(&sPack);
     setUiElementsFromData(sPack);
     for (int i = 0; i < 6; ++i) {
         m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value() / 10, 'f', 1));
@@ -245,7 +247,7 @@ void MainWindow::checkPresetAutostart() {
     auto pStr = autostart.toStdString();
     for (auto& pair : m_presetMap) {
         if (pStr == pair.first) {
-            MsrOps::apply(pair.second);
+            sendSettingsPackage(pair.second);
             setUiElementsFromData(pair.second);
             break;
         }
@@ -332,18 +334,14 @@ void MainWindow::updateStatString() {
         }
     }
 
-    const auto pUnits{MSR::readAndReturn<MSR_RAPL_POWER_UNIT>(0, MSR_RAPL_POWER_UNIT_ADDR)};
-    const auto power{MSR::readAndReturn<MSR_PKG_ENERGY_STATUS>(m_pCores[0], MSR_PKG_ENERGY_STATUS_ADDR)};
-    const auto statsP0{MSR::readAndReturn<IA32_PERF_STATUS>(m_pCores[0], IA32_PERF_STATUS_ADDR)};
-    const auto statsE0{MSR::readAndReturn<IA32_PERF_STATUS>(m_eCores[0], IA32_PERF_STATUS_ADDR)};
-    const auto tempTarget{MSR::readAndReturn<MSR_TEMPERATURE_TARGET>(m_pCores[0], MSR_TEMPERATURE_TARGET_ADDR)};
-    const auto pkgTherm{MSR::readAndReturn<IA32_PACKAGE_THERM_STATUS>(m_pCores[0], IA32_PACKAGE_THERM_STATUS_ADDR)};
+    StatusPackage pkg{};
+    getStatusPackage(&pkg);
 
-    const std::string vid = std::format("VID: {:.3f}V", readVID(statsP0));
-    const std::string pow = std::format("Power: {:.2f}W", getPkgPowerW(pUnits, power, 1));
-    const std::string temp = std::format("Pkg Temp: {}°C", getCurPkgTemp(tempTarget, pkgTherm));
-    const std::string pRatio = std::format("P-Core 0 Ratio: {}x", statsP0.CurrentFID);
-    const std::string eRatio = std::format("E-Core 0 Ratio: {}x", statsE0.CurrentFID);
+    const std::string vid = std::format("VID: {:.3f}V", readVID(pkg.pcorePerfStats));
+    const std::string pow = std::format("Power: {:.2f}W", getPkgPowerW(pkg.powerUnits, pkg.energyStatus, 1));
+    const std::string temp = std::format("Pkg Temp: {}°C", getCurPkgTemp(pkg.tempTarget, pkg.packageTherm));
+    const std::string pRatio = std::format("P-Core 0 Ratio: {}x", pkg.pcorePerfStats.getCurFID());
+    const std::string eRatio = std::format("E-Core 0 Ratio: {}x", pkg.ecorePerfStats.getCurFID());
     ui->vidLabel->setText(vid.c_str());
     ui->powLabel->setText(pow.c_str());
     ui->tempLabel->setText(temp.c_str());
@@ -363,7 +361,7 @@ void MainWindow::readPresets() {
     }
     QString filePath = dir + "/preset.conf";
     m_presetMap.clear();
-    if (MsrOps::readPresets(filePath.toStdString(), &m_presetMap)== IMT_ErrCode::OK) {
+    if (MsrOps::readPresets(filePath.toStdString(), &m_presetMap)== IMT_ErrCode::OK) {  // TODO!!!
         ui->presetCombo->clear();
         for (const auto &str: m_presetMap | std::views::keys) {
             const QString itemStr = QString::fromStdString(str);
@@ -536,7 +534,7 @@ void MainWindow::resetVF() const {
     }
 }
 
-void MainWindow::onApplyPressed() const {
+void MainWindow::onApplyPressed() {
     SetupPackage pkg{};
     pkg.NumECores = m_eCores.size();
     pkg.NumPCores = m_pCores.size();
@@ -548,12 +546,20 @@ void MainWindow::onApplyPressed() const {
     pkg.RingMin.set(ui->ringMinEdit->text().toInt());
     pkg.RingMax.set(ui->ringMaxEdit->text().toInt());
     if (validateEntries(&pkg)) {
-        if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
+        //if (MsrOps::apply(pkg) != IMT_ErrCode::OK) {
+        if (sendSettingsPackage(pkg) != IMT_ErrCode::OK) {
             QMessageBox::critical(nullptr,
             "IntelMsrGui",
             "MSRs not written correctly.");
         }
-        const SetupPackage sPack = MsrOps::readCurrentAsPackage();
+        //const SetupPackage sPack = MsrOps::readCurrentAsPackage();
+        SetupPackage sPack{};
+        if (!getSettingsPackage(&sPack)) {
+            QMessageBox::critical(nullptr,
+            "IntelMsrGui",
+            "Failed to read from CLI tool.");
+            return;
+        }
         setUiElementsFromData(sPack);
     } else
         QMessageBox::critical(nullptr,
@@ -595,7 +601,7 @@ void MainWindow::onSavePressed() const {
         return;
     }
     QString filePath = dir + "/preset.conf";
-    if (MsrOps::saveCurrentSetting(
+    if (MsrOps::saveCurrentSetting(                                 // TODO!
         filePath.toStdString(),
         ui->presetNameEdit->text().toStdString(),
         pkg) != IMT_ErrCode::OK)
@@ -617,7 +623,7 @@ void MainWindow::onDeletePressed() const {
         return; // todo
     }
     QString filePath = dir + "/preset.conf";
-    if (MsrOps::deletePreset(filePath.toStdString(),
+    if (MsrOps::deletePreset(filePath.toStdString(),                        // TODO!
         ui->presetCombo->currentText().toStdString()) != IMT_ErrCode::OK) {
         std::cout << "Error deleting.";
     }
@@ -650,7 +656,7 @@ void MainWindow::onAutostartCheckClicked(bool checked) const {
 
 
 
-int MainWindow::sendPackage(const SetupPackage &pkg) {
+IMT_ErrCode MainWindow::sendSettingsPackage(const SetupPackage &pkg) {
     const std::string data = pkg.to_json().dump();
 
     const auto process = new QProcess(this);
@@ -665,5 +671,48 @@ int MainWindow::sendPackage(const SetupPackage &pkg) {
         exit = exitCode;
     });
 
-    return exit;
+    return static_cast<IMT_ErrCode>(exit);
+}
+
+bool MainWindow::getSettingsPackage(SetupPackage* outPkg) {
+    QProcess process;
+    process.start("pkexec", QStringList() << "intel_msr_tool" << "-all");
+
+    if (!process.waitForFinished()) {
+        qDebug() << "Process timed out or failed to start";
+        return false;
+    }
+
+    if (process.exitCode() != 0) {
+        qDebug() << "Error output:" << process.readAllStandardError();
+        return false;
+    }
+
+    QByteArray output = process.readAllStandardOutput();
+    try {
+        auto j = nlohmann::json::parse(output.toStdString());
+        SetupPackage incomingPkg;
+        incomingPkg.assign_from_json(j);
+        *outPkg = incomingPkg;
+        return true;
+
+    } catch (const std::exception& e) {
+        qDebug() << "JSON Parse Error:" << e.what();
+        return false;
+    }
+}
+
+static std::string getCpuName() {
+    std::ifstream cpuInfo("/proc/cpuinfo");
+    std::string line;
+
+    while (std::getline(cpuInfo, line)) {
+        if (line.rfind("model name", 0) == 0) {
+            size_t colon = line.find(':');
+            if (colon != std::string::npos)
+                return line.substr(colon + 2);
+        }
+    }
+
+    return "Unknown CPU";
 }

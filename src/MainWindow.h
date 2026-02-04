@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "msr/Parameters.hpp"
+#include "msr/IMT_ErrCode.h"
+#include "msr/IntelTypes.hpp"
 
 
 class QLineEdit;
@@ -54,7 +56,11 @@ private:
     static bool getAutostartPreset(QString* outStr);
     static bool setAutostartPreset(const QString& presetName);
 
-    int sendPackage(const SetupPackage& pkg);
+    IMT_ErrCode sendSettingsPackage(const SetupPackage& pkg);
+    static bool getSettingsPackage(SetupPackage* outPkg);
+    static bool getStatusPackage(StatusPackage* outPkg);
+
+    static std::string getCpuName();
 
 private Q_SLOTS:
     void onVfSliderValueChanged(int value, int vfPoint) const;
@@ -62,7 +68,7 @@ private Q_SLOTS:
     void onOffsetSliderValueChanged(int value, int domain) const;
     void resetGlobals() const;
     void resetVF() const;
-    void onApplyPressed() const;
+    void onApplyPressed();
     void onSavePressed() const;
     void onDeletePressed() const;
     void onPresetComboClicked(int index) const;

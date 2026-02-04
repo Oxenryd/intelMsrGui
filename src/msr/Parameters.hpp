@@ -11,6 +11,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "ArgType.h"
+#include "IntelTypes.hpp"
 
 union ValueUnion {
     double asDouble;
@@ -158,7 +159,9 @@ constexpr ArgMapping ARGS_DEF[] {
     {"-vf10", ArgType::VF_CoreOffsetPoint1, 10},
     {"-vf11", ArgType::VF_CoreOffsetPoint1, 11},
 
-    {"-json", ArgType::Json, 0}
+    {"-json", ArgType::Json, 0},
+    {"-all", ArgType::ReadAll, 0},
+    {"-status", ArgType::Status, 0}
 };
 constexpr size_t NUM_ARGS_DEF = std::size(ARGS_DEF);
 
@@ -216,6 +219,75 @@ JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
 
     return j;
 }
+
+
+JSon statReg_to_json(const StatusRegister reg, uint64_t val) {
+    JSon j;
+    try {
+        j[statusReg_to_string(reg)] = val;
+    } catch (const std::exception& e) {
+        std::cerr << "ERROR in param_to_json(): " << e.what() << std::endl;
+    }
+
+    return j;
+}
+
+
+struct alignas(8) StatusPackage
+{
+    MSR_RAPL_POWER_UNIT         powerUnits;
+    MSR_PKG_ENERGY_STATUS       energyStatus;
+    IA32_PERF_STATUS            pcorePerfStats;
+    IA32_PERF_STATUS            ecorePerfStats;
+    MSR_TEMPERATURE_TARGET      tempTarget;
+    IA32_PACKAGE_THERM_STATUS   packageTherm;
+    uint16_t                     pCoresCount;
+    uint16_t                     eCoresCount;
+
+    [[nodiscard]] JSon to_json() const {
+        JSon j = JSon::array();
+
+        j.push_back(statReg_to_json(StatusRegister::MSR_RAPL_POWER_UNIT, powerUnits.value));
+        j.push_back(statReg_to_json(StatusRegister::MSR_PKG_ENERGY_STATUS , energyStatus.value));
+        j.push_back(statReg_to_json(StatusRegister::P_IA32_PERF_STATUS, pcorePerfStats.value));
+        j.push_back(statReg_to_json(StatusRegister::E_IA32_PERF_STATUS, ecorePerfStats.value));
+        j.push_back(statReg_to_json(StatusRegister::MSR_TEMPERATURE_TARGET, tempTarget.value));
+        j.push_back(statReg_to_json(StatusRegister::IA32_PACKAGE_THERM_STATUS, packageTherm.value));
+        j.push_back(statReg_to_json(StatusRegister::Num_pCores, pCoresCount));
+        j.push_back(statReg_to_json(StatusRegister::Num_eCores, eCoresCount));
+
+        return j;
+    }
+
+    void assign_from_json(const JSon& j) {
+        for (const auto& obj : j) {
+            if (obj.contains(POWER_UNIT)) {
+                powerUnits.value = obj[POWER_UNIT].get<uint64_t>();
+            }
+            if (obj.contains(PKG_EN_STATUS)) {
+                energyStatus.value = obj[PKG_EN_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(TEMP_TARGET)) {
+                tempTarget.value = obj[TEMP_TARGET].get<uint64_t>();
+            }
+            if (obj.contains(THERM_STATUS)) {
+                packageTherm.value = obj[THERM_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(NUM_PCORES)) {
+                pCoresCount = obj[NUM_PCORES].get<uint64_t>();
+            }
+            if (obj.contains(NUM_ECORES)) {
+                eCoresCount = obj[NUM_ECORES].get<uint64_t>();
+            }
+            if (obj.contains(PCORE_PERF_STATUS)) {
+                pcorePerfStats.value = obj[PCORE_PERF_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(ECORE_PERF_STATUS)) {
+                ecorePerfStats.value = obj[ECORE_PERF_STATUS].get<uint64_t>();
+            }
+        }
+    }
+};
 
 struct SetupPackage {
 
