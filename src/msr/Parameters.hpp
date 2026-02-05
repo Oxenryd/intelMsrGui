@@ -174,11 +174,11 @@ static ArgType getArgType(const char* arg) {
     return ArgType::Unknown;
 }
 
-constexpr ArgType getArgType(const std::string& str) {
+inline constexpr ArgType getArgType(const std::string& str) {
     return getArgType(str.c_str());
 }
 
-constexpr uint8_t getArgNum(const ArgType type) {
+inline constexpr uint8_t getArgNum(const ArgType type) {
     for (const auto mapping : ARGS_DEF) {
         if (mapping.type == type) {
             return mapping.num_args;
@@ -187,11 +187,11 @@ constexpr uint8_t getArgNum(const ArgType type) {
     return static_cast<uint8_t>(-1);
 }
 
-constexpr uint8_t getArgNum(const std::string &str) {
+inline constexpr uint8_t getArgNum(const std::string &str) {
     return getArgNum(getArgType(str));
 }
 
-constexpr const char* getArgString(const ArgType type) {
+inline constexpr const char* getArgString(const ArgType type) {
     for (auto mapping : ARGS_DEF) {
         if (type == mapping.type)
             return mapping.name;
@@ -208,7 +208,7 @@ using JSon = nlohmann::json;
 #define CLOCKS_FIRST "clocksFirst"
 
 template <ArgType ArgT, typename ValT>
-JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
+inline JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
     JSon j;
     try {
         j[TYPE] = static_cast<uint8_t>(ArgT);
@@ -221,7 +221,7 @@ JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
 }
 
 
-JSon statReg_to_json(const StatusRegister reg, uint64_t val) {
+inline JSon statReg_to_json(const StatusRegister reg, uint64_t val) {
     JSon j;
     try {
         j[statusReg_to_string(reg)] = val;
@@ -504,6 +504,10 @@ struct SetupPackage {
         V_Offset_SystemAgent.set(offsets[3]);
         V_Offset_AnalogIO.set(offsets[4]);
         V_Offset_DigitalIO.set(offsets[5]);
+    }
+
+    void assign_from_json(const std::string& str) {
+        assign_from_json(JSon::parse(str));
     }
 
     void assign_from_json(const JSon& j) {

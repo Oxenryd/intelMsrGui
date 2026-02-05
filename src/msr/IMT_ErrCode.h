@@ -24,7 +24,9 @@ enum class IMT_ErrCode : uint8_t {
     ParsingError,
     UnknownArgument,
     HWP_NotAvailable,
-    NoPresetsFound
+    NoPresetsFound,
+    TimedOut,
+    JsonParse
 };
 
 constexpr auto IMT_OK = static_cast<IMT_ErrCode>(0);

@@ -7,7 +7,6 @@
 #include <KF6/KStatusNotifierItem/KStatusNotifierItem>
 #include "MainWindow.h"
 
-//#define DEBUG
 
 bool isRoot() { return geteuid() == 0; }
 

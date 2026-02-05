@@ -659,24 +659,37 @@ void MainWindow::onAutostartCheckClicked(bool checked) const {
 IMT_ErrCode MainWindow::sendSettingsPackage(const SetupPackage &pkg) {
     const std::string data = pkg.to_json().dump();
 
-    const auto process = new QProcess(this);
-    QStringList args;
-    args << "./intel_msr_tool -json " << QString::fromStdString(data);
-
-    // pkexec will trigger the system password prompt
-    process->start("pkexec", args);
+    QProcess process;
+    process.start("pkexec", QStringList() << "./intel_msr_tool" << "-json" << QString::fromStdString(data));
 
     int exit = 0;
-    connect(process, &QProcess::finished, [&](int exitCode) {
-        exit = exitCode;
-    });
+    if (!process.waitForFinished()) {
+        qDebug() << "Process timed out or failed to start";
+        return IMT_ErrCode::TimedOut;
+    }
+
+    if (process.exitCode() != 0) {
+        qDebug() << "Error output:" << process.readAllStandardError();
+        exit = process.exitCode();
+        return static_cast<IMT_ErrCode>(exit);
+    }
+    QByteArray output = process.readAllStandardOutput();
+    try {
+        //auto j = nlohmann::json::parse(output.toStdString());
+        std::cout << output.toStdString();
+        return IMT_ErrCode::OK;
+
+    } catch (const std::exception& e) {
+        qDebug() << "JSON Parse Error:" << e.what();
+        return IMT_ErrCode::JsonParse;
+    }
 
     return static_cast<IMT_ErrCode>(exit);
 }
 
 bool MainWindow::getSettingsPackage(SetupPackage* outPkg) {
     QProcess process;
-    process.start("pkexec", QStringList() << "intel_msr_tool" << "-all");
+    process.start("pkexec", QStringList() << "./intel_msr_tool" << "-all");
 
     if (!process.waitForFinished()) {
         qDebug() << "Process timed out or failed to start";
@@ -702,7 +715,7 @@ bool MainWindow::getSettingsPackage(SetupPackage* outPkg) {
     }
 }
 
-static std::string getCpuName() {
+std::string MainWindow::getCpuName() {
     std::ifstream cpuInfo("/proc/cpuinfo");
     std::string line;
 
@@ -715,4 +728,8 @@ static std::string getCpuName() {
     }
 
     return "Unknown CPU";
+}
+
+bool MainWindow::getStatusPackage(StatusPackage* outPkg) {
+    return false;
 }

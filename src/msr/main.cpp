@@ -4,6 +4,7 @@
 
 #include <format>
 #include <thread>
+#include <nlohmann/json.hpp>
 
 #include "CLI.h"
 #include "IMT_ErrCode.h"
@@ -16,7 +17,25 @@ using namespace CLI;
 
 int main(const int argc, char *argv[]) {
 
+    if (argc == 1)
+        return EXIT_SUCCESS; // TODO: write basic info
+
     const std::vector<std::string> args(argv, argv + argc);
+#ifdef DEBUG
+    // if (argc > 1 && args[1] == "-json") {
+    //     std::cout << "Caught JSON arg..." << std::endl;
+    //     return EXIT_SUCCESS;
+    // }
+#endif
+
+    if (args[1] == "-json") {
+        SetupPackage sPack{};
+        std::string rawStr{args[2]};
+        JSon j = JSon::parse(rawStr);
+        sPack.assign_from_json(rawStr);
+        return static_cast<int>(MsrOps::apply(sPack));
+    }
+
     ParamPairs params;
     bool shouldLoop = false;
     auto EC = IMT_ErrCode::OK;
