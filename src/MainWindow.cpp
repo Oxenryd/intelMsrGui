@@ -64,6 +64,26 @@ void MainWindow::updateTrayMenu(QMenu *menu) {
 
 }
 
+void MainWindow::onShow() {
+    if (m_statsTimer)
+        delete m_statsTimer;
+
+    m_statsTimer = new QTimer(this); // not leaked
+    connect(m_statsTimer, &QTimer::timeout,
+        this, [this]() {
+            updateStatString();
+    });
+    m_statsTimer->start(1000);
+}
+
+void MainWindow::onHide() {
+    if (m_statsTimer) {
+        m_statsTimer->stop();
+        delete m_statsTimer;
+        m_statsTimer = nullptr;
+    }
+}
+
 void MainWindow::init() {
 
     m_pCoreEdits.push_back(ui->pCoreEdit_1);
@@ -188,12 +208,12 @@ void MainWindow::init() {
             onApplyPressed();
         });
 
-    auto* timer = new QTimer(this); // not leaked
-    connect(timer, &QTimer::timeout,
-        this, [this]() {
-            updateStatString();
-    });
-    timer->start(1000);
+    // auto* timer = new QTimer(this); // not leaked
+    // connect(timer, &QTimer::timeout,
+    //     this, [this]() {
+    //         updateStatString();
+    // });
+    // timer->start(1000);
 
     connect(ui->addPresetBtn, &QPushButton::clicked,
         this, [this]() {
@@ -262,14 +282,15 @@ void MainWindow::setUiElementsFromData(const SetupPackage& pkg) const {
         m_pCoreEdits[i]->setText(QString::number(pGroup[i]));
         m_eCoreEdits[i]->setText(QString::number(eGroup[i]));
     }
-
+    auto vf_points = pkg.getVfCoreOffsetPoints();
     for (int i = 0; i < 11; ++i) {
-        const auto result =
-            std::bit_cast<OcMailbox::OC_MAILBOX_MSR, uint64_t>(OcMailbox::readVFOffsetRaw(i + 1));
-        const double offset = OcMailbox::convertOffsetFromRaw(result.VF.Offset);
-        m_vfPoints[i]->setText(QString::number(result.VF.PointFrequency * 100));
-        m_vfSliders[i]->setValue(static_cast<int>(offset * 10));
-        m_vfEdits[i]->setText(QString::number(offset, 'f', 1));
+        //const auto result =
+        //    std::bit_cast<OcMailbox::OC_MAILBOX_MSR, uint64_t>(vf_points[i]);
+        //const double offset = OcMailbox::convertOffsetFromRaw(result.VF.Offset);
+        //m_vfPoints[i]->setText(QString::number(result.VF.PointFrequency * 100));
+        m_vfPoints[i]->setText(QString::number(pkg.VF_CoreFreqs[i] * 100));
+        m_vfSliders[i]->setValue(static_cast<int>(vf_points[i] * 10));
+        m_vfEdits[i]->setText(QString::number(vf_points[i], 'f', 1));
     }
 
     ui->ringMaxEdit->setText(QString::number(pkg.RingMax.getValue()));
@@ -731,5 +752,29 @@ std::string MainWindow::getCpuName() {
 }
 
 bool MainWindow::getStatusPackage(StatusPackage* outPkg) {
-    return false;
+    QProcess process;
+    process.start("pkexec", QStringList() << "./intel_msr_tool" << "-status");
+
+    if (!process.waitForFinished()) {
+        qDebug() << "Process timed out or failed to start";
+        return false;
+    }
+
+    if (process.exitCode() != 0) {
+        qDebug() << "Error output:" << process.readAllStandardError();
+        return false;
+    }
+
+    QByteArray output = process.readAllStandardOutput();
+    try {
+        auto j = nlohmann::json::parse(output.toStdString());
+        StatusPackage incomingPkg;
+        incomingPkg.assign_from_json(j);
+        *outPkg = incomingPkg;
+        return true;
+
+    } catch (const std::exception& e) {
+        qDebug() << "JSON Parse Error:" << e.what();
+        return false;
+    }
 }

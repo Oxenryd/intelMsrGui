@@ -22,7 +22,10 @@ union ValueUnion {
     constexpr explicit ValueUnion(const double d) : asDouble(d) {}
     constexpr explicit ValueUnion(const uint64_t u) : asUInt(u) {}
     constexpr explicit ValueUnion(const bool b) : asBool(b) {}
-
+    constexpr ValueUnion& operator=(const ValueUnion& rhs) = delete;
+    constexpr ValueUnion& operator=(const double d) {asDouble = d; return *this;}
+    constexpr ValueUnion& operator=(const bool b) {asBool = b; return *this;}
+    constexpr ValueUnion& operator=(const uint64_t i) {asUInt = i; return *this;}
 };
 
 template <typename T>
@@ -33,6 +36,7 @@ struct ArgValue {
                   "ArgValue<T> only supports double, bool, uint64_t");
 
     ValueUnion value;
+    ArgValue& operator=(const ArgValue& rhs) {value = rhs.get(); return *this;}
     constexpr ArgValue(const ArgValue& other) : value{other.get()} {}
     constexpr explicit ArgValue(T v) : value{v} {}
 
@@ -205,6 +209,9 @@ using JSon = nlohmann::json;
 #define VALUE "value"
 #define P_CORES "pCores"
 #define E_CORES "eCores"
+#define VCORE "vcore"
+#define VF_FREQ_IDX "vfFreqIdx"
+#define VF_FREQ "vfFreq"
 #define CLOCKS_FIRST "clocksFirst"
 
 template <ArgType ArgT, typename ValT>
@@ -241,8 +248,8 @@ struct alignas(8) StatusPackage
     IA32_PERF_STATUS            ecorePerfStats;
     MSR_TEMPERATURE_TARGET      tempTarget;
     IA32_PACKAGE_THERM_STATUS   packageTherm;
-    uint16_t                     pCoresCount;
-    uint16_t                     eCoresCount;
+    uint16_t                    pCoresCount;
+    uint16_t                    eCoresCount;
 
     [[nodiscard]] JSon to_json() const {
         JSon j = JSon::array();
@@ -354,9 +361,17 @@ struct SetupPackage {
         p[P_CORES] = NumPCores;
         e[E_CORES] = NumECores;
         cf[CLOCKS_FIRST] = ApplyClocksFirst;
+        auto vf_freq = nlohmann::json::array();
+        for (size_t i = 0; i < 11; ++i) {
+            JSon v = nlohmann::json::object();
+            v[VF_FREQ_IDX] = i;
+            v[VF_FREQ]= VF_CoreFreqs[i];
+            vf_freq.push_back(v);
+        }
         j.push_back(p);
         j.push_back(e);
         j.push_back(cf);
+        j.push_back(vf_freq);
 
         return j;
     }
@@ -365,6 +380,8 @@ struct SetupPackage {
     uint16_t NumECores = static_cast<uint16_t>(-1);
     bool ApplyClocksFirst = true;
     bool HWP_IsSet = false;
+
+    uint8_t VF_CoreFreqs[11];
 
     ImtParam<ArgType::V_Offset_Core, double> V_Offset_VCore{0.0};
     ImtParam<ArgType::V_Offset_IGpu, double> V_Offset_IGpu{0.0};
@@ -415,6 +432,24 @@ struct SetupPackage {
 
     ImtParam<ArgType::RingMin, uint64_t> RingMin{static_cast<uint64_t>(-1)};
     ImtParam<ArgType::RingMax, uint64_t> RingMax{static_cast<uint64_t>(-1)};
+
+    void setVfCoreOffsetPoint(const uint8_t point, const double raw) {
+        switch (point) {
+            default: return;
+
+            case 1: VF_CoreOffsetPoint1.value.set(raw); break;
+            case 2: VF_CoreOffsetPoint2.value.set(raw); break;
+            case 3: VF_CoreOffsetPoint3.value.set(raw); break;
+            case 4: VF_CoreOffsetPoint4.value.set(raw); break;
+            case 5: VF_CoreOffsetPoint5.value.set(raw); break;
+            case 6: VF_CoreOffsetPoint6.value.set(raw); break;
+            case 7: VF_CoreOffsetPoint7.value.set(raw); break;
+            case 8: VF_CoreOffsetPoint8.value.set(raw); break;
+            case 9: VF_CoreOffsetPoint9.value.set(raw); break;
+            case 10: VF_CoreOffsetPoint10.value.set(raw); break;
+            case 11: VF_CoreOffsetPoint11.value.set(raw); break;
+        }
+    }
 
     [[nodiscard]] std::vector<double> getVfCoreOffsetPoints() const {
         std::vector<double> vfCoreOffsetPoints;
@@ -512,6 +547,15 @@ struct SetupPackage {
 
     void assign_from_json(const JSon& j) {
         for (const auto& obj : j) {
+
+            if (obj.is_array()) {
+                for (auto& sub : obj) {
+                    if (sub.contains(VF_FREQ_IDX)) {
+                        auto idx = sub[VF_FREQ_IDX].get<uint16_t>();
+                        VF_CoreFreqs[idx] = sub[VF_FREQ].get<uint16_t>();
+                    }
+                }
+            }
 
             if (obj.contains(P_CORES)) {
                 NumPCores = obj[P_CORES].get<uint16_t>();

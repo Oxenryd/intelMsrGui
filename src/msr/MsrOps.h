@@ -12,11 +12,13 @@
 #include <unordered_map>
 
 struct SetupPackage;
+struct StatusPackage;
 enum class IMT_ErrCode : uint8_t;
 namespace MsrOps {
 
     std::pair<std::vector<int>, std::vector<int>> getCoresCount();
     SetupPackage readCurrentAsPackage();
+    StatusPackage readStatusAsPackage(size_t eCoreOffset);
     IMT_ErrCode readPresets(const std::string& presetFilePath, std::unordered_map<std::string, SetupPackage>* outPresets);
     IMT_ErrCode deletePreset(const std::string& presetFilePath, const std::string& presetName);
     IMT_ErrCode saveCurrentSetting(const std::string& presetFilePath, const std::string& presetName, const SetupPackage& pkg);

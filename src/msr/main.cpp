@@ -27,6 +27,7 @@ int main(const int argc, char *argv[]) {
     //     return EXIT_SUCCESS;
     // }
 #endif
+    auto [pCores, eCores] = MsrOps::getCoresCount();
 
     if (args[1] == "-json") {
         SetupPackage sPack{};
@@ -42,6 +43,13 @@ int main(const int argc, char *argv[]) {
     PendingSave saveData{};
     IMT_CHECK_AND_RETURN_INT(EC, validateCliArgs(args, params));
 
+    if (params[0].first == ArgType::Status) {
+        const StatusPackage statPkg = MsrOps::readStatusAsPackage(pCores.size());
+        const auto json = statPkg.to_json();
+        std::cout << json << std::endl;
+        return EXIT_SUCCESS;
+    }
+
     if (params[0].first == ArgType::ReadAll) {
         const SetupPackage sPack = MsrOps::readCurrentAsPackage();
         const auto json = sPack.to_json();
@@ -50,7 +58,7 @@ int main(const int argc, char *argv[]) {
     }
 
     if (params[0].first == ArgType::Status) {
-        auto [pCores, eCores] = MsrOps::getCoresCount();
+
         StatusPackage pkg{};
 
         pkg.pCoresCount = static_cast<uint16_t>(eCores.size());

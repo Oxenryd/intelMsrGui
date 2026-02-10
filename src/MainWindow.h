@@ -16,6 +16,7 @@
 class QLineEdit;
 class QLabel;
 class QSlider;
+class QTimer;
 
 namespace Ui {
     class MainWindow;
@@ -30,6 +31,8 @@ public:
     ~MainWindow() override;
 
     void updateTrayMenu(QMenu* menu);
+    void onShow();
+    void onHide();
 
 private:
     Ui::MainWindow* ui;
@@ -43,6 +46,8 @@ private:
     std::vector<int> m_eCores;
     std::vector<QLineEdit*> m_pCoreEdits;
     std::vector<QLineEdit*> m_eCoreEdits;
+
+    QTimer* m_statsTimer{nullptr};
 
     std::unordered_map<std::string, SetupPackage> m_presetMap;
 
