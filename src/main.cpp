@@ -7,7 +7,6 @@
 #include <KF6/KStatusNotifierItem/KStatusNotifierItem>
 #include "MainWindow.h"
 
-//#define DEBUG
 
 bool isRoot() { return geteuid() == 0; }
 
@@ -18,10 +17,10 @@ int main(int argc, char *argv[]) {
     a.setApplicationDisplayName("Intel MSR Gui");
     a.setQuitOnLastWindowClosed(false);
     a.setDesktopFileName("intelMsrGui");
-    KStatusNotifierItem *sni =
-        new KStatusNotifierItem("my-tool-id", &a);
-    sni->setIconByName("utility-terminal"); // Use a standard icon name to test
-    sni->setStatus(KStatusNotifierItem::Active);
+    // KStatusNotifierItem *sni =
+    //     new KStatusNotifierItem("my-tool-id", &a);
+    // sni->setIconByName("utility-terminal"); // Use a standard icon name to test
+    // sni->setStatus(KStatusNotifierItem::Active);
     const QIcon icon{":icon/icon.png"};
     a.setWindowIcon(icon);
 
@@ -39,9 +38,12 @@ int main(int argc, char *argv[]) {
 #endif
 
     MainWindow w;
+    w.onHide();
     w.hide();
-    if (!startHidden)
+    if (!startHidden) {
+        w.onShow();
         w.show();
+    }
 
     auto *tray = new QSystemTrayIcon(icon, &a);
 
@@ -52,6 +54,7 @@ int main(int argc, char *argv[]) {
 
     QAction *showAction = menu->addAction("Show");
     QObject::connect(showAction, &QAction::triggered, &w, [&] {
+        w.onShow();
         w.show();
         w.raise();
         w.activateWindow();
@@ -68,9 +71,12 @@ int main(int argc, char *argv[]) {
     QObject::connect(tray, &QSystemTrayIcon::activated,
                      &w, [&](QSystemTrayIcon::ActivationReason reason) {
         if (reason == QSystemTrayIcon::Trigger) {
-            if (w.isVisible())
+            if (w.isVisible()) {
+                w.onHide();
                 w.hide();
+            }
             else {
+                w.onShow();
                 w.show();
                 w.raise();
                 w.activateWindow();

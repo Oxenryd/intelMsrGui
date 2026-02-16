@@ -11,6 +11,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "ArgType.h"
+#include "IntelTypes.hpp"
 
 union ValueUnion {
     double asDouble;
@@ -21,7 +22,10 @@ union ValueUnion {
     constexpr explicit ValueUnion(const double d) : asDouble(d) {}
     constexpr explicit ValueUnion(const uint64_t u) : asUInt(u) {}
     constexpr explicit ValueUnion(const bool b) : asBool(b) {}
-
+    constexpr ValueUnion& operator=(const ValueUnion& rhs) = delete;
+    constexpr ValueUnion& operator=(const double d) {asDouble = d; return *this;}
+    constexpr ValueUnion& operator=(const bool b) {asBool = b; return *this;}
+    constexpr ValueUnion& operator=(const uint64_t i) {asUInt = i; return *this;}
 };
 
 template <typename T>
@@ -32,6 +36,7 @@ struct ArgValue {
                   "ArgValue<T> only supports double, bool, uint64_t");
 
     ValueUnion value;
+    ArgValue& operator=(const ArgValue& rhs) {value = rhs.get(); return *this;}
     constexpr ArgValue(const ArgValue& other) : value{other.get()} {}
     constexpr explicit ArgValue(T v) : value{v} {}
 
@@ -157,6 +162,10 @@ constexpr ArgMapping ARGS_DEF[] {
     {"-vf9", ArgType::VF_CoreOffsetPoint1, 9},
     {"-vf10", ArgType::VF_CoreOffsetPoint1, 10},
     {"-vf11", ArgType::VF_CoreOffsetPoint1, 11},
+
+    {"-json", ArgType::Json, 0},
+    {"-all", ArgType::ReadAll, 0},
+    {"-status", ArgType::Status, 0}
 };
 constexpr size_t NUM_ARGS_DEF = std::size(ARGS_DEF);
 
@@ -169,11 +178,11 @@ static ArgType getArgType(const char* arg) {
     return ArgType::Unknown;
 }
 
-constexpr ArgType getArgType(const std::string& str) {
+inline constexpr ArgType getArgType(const std::string& str) {
     return getArgType(str.c_str());
 }
 
-constexpr uint8_t getArgNum(const ArgType type) {
+inline constexpr uint8_t getArgNum(const ArgType type) {
     for (const auto mapping : ARGS_DEF) {
         if (mapping.type == type) {
             return mapping.num_args;
@@ -182,11 +191,11 @@ constexpr uint8_t getArgNum(const ArgType type) {
     return static_cast<uint8_t>(-1);
 }
 
-constexpr uint8_t getArgNum(const std::string &str) {
+inline constexpr uint8_t getArgNum(const std::string &str) {
     return getArgNum(getArgType(str));
 }
 
-constexpr const char* getArgString(const ArgType type) {
+inline constexpr const char* getArgString(const ArgType type) {
     for (auto mapping : ARGS_DEF) {
         if (type == mapping.type)
             return mapping.name;
@@ -200,10 +209,13 @@ using JSon = nlohmann::json;
 #define VALUE "value"
 #define P_CORES "pCores"
 #define E_CORES "eCores"
+#define VCORE "vcore"
+#define VF_FREQ_IDX "vfFreqIdx"
+#define VF_FREQ "vfFreq"
 #define CLOCKS_FIRST "clocksFirst"
 
 template <ArgType ArgT, typename ValT>
-JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
+inline JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
     JSon j;
     try {
         j[TYPE] = static_cast<uint8_t>(ArgT);
@@ -214,6 +226,75 @@ JSon param_to_json(const ImtParam<ArgT, ValT>& param) {
 
     return j;
 }
+
+
+inline JSon statReg_to_json(const StatusRegister reg, uint64_t val) {
+    JSon j;
+    try {
+        j[statusReg_to_string(reg)] = val;
+    } catch (const std::exception& e) {
+        std::cerr << "ERROR in param_to_json(): " << e.what() << std::endl;
+    }
+
+    return j;
+}
+
+
+struct alignas(8) StatusPackage
+{
+    MSR_RAPL_POWER_UNIT         powerUnits;
+    MSR_PKG_ENERGY_STATUS       energyStatus;
+    IA32_PERF_STATUS            pcorePerfStats;
+    IA32_PERF_STATUS            ecorePerfStats;
+    MSR_TEMPERATURE_TARGET      tempTarget;
+    IA32_PACKAGE_THERM_STATUS   packageTherm;
+    uint16_t                    pCoresCount;
+    uint16_t                    eCoresCount;
+
+    [[nodiscard]] JSon to_json() const {
+        JSon j = JSon::array();
+
+        j.push_back(statReg_to_json(StatusRegister::MSR_RAPL_POWER_UNIT, powerUnits.value));
+        j.push_back(statReg_to_json(StatusRegister::MSR_PKG_ENERGY_STATUS , energyStatus.value));
+        j.push_back(statReg_to_json(StatusRegister::P_IA32_PERF_STATUS, pcorePerfStats.value));
+        j.push_back(statReg_to_json(StatusRegister::E_IA32_PERF_STATUS, ecorePerfStats.value));
+        j.push_back(statReg_to_json(StatusRegister::MSR_TEMPERATURE_TARGET, tempTarget.value));
+        j.push_back(statReg_to_json(StatusRegister::IA32_PACKAGE_THERM_STATUS, packageTherm.value));
+        j.push_back(statReg_to_json(StatusRegister::Num_pCores, pCoresCount));
+        j.push_back(statReg_to_json(StatusRegister::Num_eCores, eCoresCount));
+
+        return j;
+    }
+
+    void assign_from_json(const JSon& j) {
+        for (const auto& obj : j) {
+            if (obj.contains(POWER_UNIT)) {
+                powerUnits.value = obj[POWER_UNIT].get<uint64_t>();
+            }
+            if (obj.contains(PKG_EN_STATUS)) {
+                energyStatus.value = obj[PKG_EN_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(TEMP_TARGET)) {
+                tempTarget.value = obj[TEMP_TARGET].get<uint64_t>();
+            }
+            if (obj.contains(THERM_STATUS)) {
+                packageTherm.value = obj[THERM_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(NUM_PCORES)) {
+                pCoresCount = obj[NUM_PCORES].get<uint64_t>();
+            }
+            if (obj.contains(NUM_ECORES)) {
+                eCoresCount = obj[NUM_ECORES].get<uint64_t>();
+            }
+            if (obj.contains(PCORE_PERF_STATUS)) {
+                pcorePerfStats.value = obj[PCORE_PERF_STATUS].get<uint64_t>();
+            }
+            if (obj.contains(ECORE_PERF_STATUS)) {
+                ecorePerfStats.value = obj[ECORE_PERF_STATUS].get<uint64_t>();
+            }
+        }
+    }
+};
 
 struct SetupPackage {
 
@@ -280,9 +361,17 @@ struct SetupPackage {
         p[P_CORES] = NumPCores;
         e[E_CORES] = NumECores;
         cf[CLOCKS_FIRST] = ApplyClocksFirst;
+        auto vf_freq = nlohmann::json::array();
+        for (size_t i = 0; i < 11; ++i) {
+            JSon v = nlohmann::json::object();
+            v[VF_FREQ_IDX] = i;
+            v[VF_FREQ]= VF_CoreFreqs[i];
+            vf_freq.push_back(v);
+        }
         j.push_back(p);
         j.push_back(e);
         j.push_back(cf);
+        j.push_back(vf_freq);
 
         return j;
     }
@@ -291,6 +380,8 @@ struct SetupPackage {
     uint16_t NumECores = static_cast<uint16_t>(-1);
     bool ApplyClocksFirst = true;
     bool HWP_IsSet = false;
+
+    uint8_t VF_CoreFreqs[11];
 
     ImtParam<ArgType::V_Offset_Core, double> V_Offset_VCore{0.0};
     ImtParam<ArgType::V_Offset_IGpu, double> V_Offset_IGpu{0.0};
@@ -341,6 +432,24 @@ struct SetupPackage {
 
     ImtParam<ArgType::RingMin, uint64_t> RingMin{static_cast<uint64_t>(-1)};
     ImtParam<ArgType::RingMax, uint64_t> RingMax{static_cast<uint64_t>(-1)};
+
+    void setVfCoreOffsetPoint(const uint8_t point, const double raw) {
+        switch (point) {
+            default: return;
+
+            case 1: VF_CoreOffsetPoint1.value.set(raw); break;
+            case 2: VF_CoreOffsetPoint2.value.set(raw); break;
+            case 3: VF_CoreOffsetPoint3.value.set(raw); break;
+            case 4: VF_CoreOffsetPoint4.value.set(raw); break;
+            case 5: VF_CoreOffsetPoint5.value.set(raw); break;
+            case 6: VF_CoreOffsetPoint6.value.set(raw); break;
+            case 7: VF_CoreOffsetPoint7.value.set(raw); break;
+            case 8: VF_CoreOffsetPoint8.value.set(raw); break;
+            case 9: VF_CoreOffsetPoint9.value.set(raw); break;
+            case 10: VF_CoreOffsetPoint10.value.set(raw); break;
+            case 11: VF_CoreOffsetPoint11.value.set(raw); break;
+        }
+    }
 
     [[nodiscard]] std::vector<double> getVfCoreOffsetPoints() const {
         std::vector<double> vfCoreOffsetPoints;
@@ -432,8 +541,21 @@ struct SetupPackage {
         V_Offset_DigitalIO.set(offsets[5]);
     }
 
+    void assign_from_json(const std::string& str) {
+        assign_from_json(JSon::parse(str));
+    }
+
     void assign_from_json(const JSon& j) {
         for (const auto& obj : j) {
+
+            if (obj.is_array()) {
+                for (auto& sub : obj) {
+                    if (sub.contains(VF_FREQ_IDX)) {
+                        auto idx = sub[VF_FREQ_IDX].get<uint16_t>();
+                        VF_CoreFreqs[idx] = sub[VF_FREQ].get<uint16_t>();
+                    }
+                }
+            }
 
             if (obj.contains(P_CORES)) {
                 NumPCores = obj[P_CORES].get<uint16_t>();

@@ -326,6 +326,10 @@ union alignas (8) IA32_PERF_STATUS  {
         uint64_t Core_Voltage_ID                   : 16;
         uint64_t Reserved2                         : 16;
     };
+
+    uint8_t getCurFID() const {
+        return static_cast<uint8_t>(CurrentFID);
+    }
 };
 #define IA32_PERF_STATUS_ADDR 0x198
 
@@ -361,11 +365,41 @@ seconds increment.
 
 
 
+enum class StatusRegister : uint8_t
+{
+    MSR_RAPL_POWER_UNIT = 0,
+    MSR_PKG_ENERGY_STATUS = 1,
+    P_IA32_PERF_STATUS = 2,
+    E_IA32_PERF_STATUS = 3,
+    MSR_TEMPERATURE_TARGET = 4,
+    IA32_PACKAGE_THERM_STATUS = 5,
+    Num_pCores = 6,
+    Num_eCores = 7
+};
+
+#define POWER_UNIT "powUnit"
+#define PKG_EN_STATUS "energyStat"
+#define TEMP_TARGET "tempTarget"
+#define THERM_STATUS "thermStatus"
+#define NUM_PCORES "pCores"
+#define NUM_ECORES "eCores"
+#define PCORE_PERF_STATUS "pPerfStat"
+#define ECORE_PERF_STATUS "ePerfStat"
 
 
 
-
-
+constexpr const char* statusReg_to_string(const StatusRegister reg) {
+    switch (reg) {
+        case StatusRegister::MSR_RAPL_POWER_UNIT: return POWER_UNIT;
+        case StatusRegister::MSR_PKG_ENERGY_STATUS: return PKG_EN_STATUS;
+        case StatusRegister::MSR_TEMPERATURE_TARGET: return TEMP_TARGET;
+        case StatusRegister::IA32_PACKAGE_THERM_STATUS: return THERM_STATUS;
+        case StatusRegister::Num_pCores: return NUM_PCORES;
+        case StatusRegister::Num_eCores: return NUM_ECORES;
+        case StatusRegister::E_IA32_PERF_STATUS: return PCORE_PERF_STATUS;
+        case StatusRegister::P_IA32_PERF_STATUS: return ECORE_PERF_STATUS;
+    }
+}
 
 
 // HELPERS

@@ -123,6 +123,28 @@ SetupPackage MsrOps::readCurrentAsPackage() {
     pkg.V_Offset_DigitalIO.value.set(OcMailbox::readDigitalVidOffset());
     pkg.V_Offset_ECache.value.set(OcMailbox::readECacheVidOffset());
 
+    pkg.VF_CoreOffsetPoint1.value.set(OcMailbox::readVFOffsetRaw(1));
+    pkg.VF_CoreOffsetPoint2.value.set(OcMailbox::readVFOffsetRaw(2));
+    pkg.VF_CoreOffsetPoint3.value.set(OcMailbox::readVFOffsetRaw(3));
+    pkg.VF_CoreOffsetPoint4.value.set(OcMailbox::readVFOffsetRaw(4));
+    pkg.VF_CoreOffsetPoint5.value.set(OcMailbox::readVFOffsetRaw(5));
+    pkg.VF_CoreOffsetPoint6.value.set(OcMailbox::readVFOffsetRaw(6));
+    pkg.VF_CoreOffsetPoint7.value.set(OcMailbox::readVFOffsetRaw(7));
+    pkg.VF_CoreOffsetPoint8.value.set(OcMailbox::readVFOffsetRaw(8));
+    pkg.VF_CoreOffsetPoint9.value.set(OcMailbox::readVFOffsetRaw(9));
+    pkg.VF_CoreOffsetPoint10.value.set(OcMailbox::readVFOffsetRaw(10));
+    pkg.VF_CoreOffsetPoint11.value.set(OcMailbox::readVFOffsetRaw(11));
+
+    for (size_t i = 0; i < 11; ++i) {
+        const auto result =
+            std::bit_cast<OcMailbox::OC_MAILBOX_MSR, uint64_t>(OcMailbox::readVFOffsetRaw(i + 1));
+        const double offset = OcMailbox::convertOffsetFromRaw(result.VF.Offset);
+        pkg.setVfCoreOffsetPoint(i + 1, offset);
+        pkg.VF_CoreFreqs[i] = static_cast<uint8_t>(result.VF.PointFrequency);
+    }
+
+
+
     MSR::readAndAssignMany(cores.first, IA32_HWP_REQUEST_ADDR, pCoreHWPs);
     MSR::readAndAssignMany(cores.second, IA32_HWP_REQUEST_ADDR, eCoreHWPs);
     bool completePerCore = !(anyUsesPkgControl(pCoreHWPs) || anyUsesPkgControl(eCoreHWPs));
@@ -137,6 +159,18 @@ SetupPackage MsrOps::readCurrentAsPackage() {
     pkg.HWP_Maximum.value.set(pCoreHWPs_PKG[0].Maximum_Performance);
 
     return pkg;
+}
+
+StatusPackage MsrOps::readStatusAsPackage(const size_t eCoreOffset) {
+    StatusPackage sPkg{};
+    sPkg.powerUnits = MSR::readAndReturn<MSR_RAPL_POWER_UNIT>(0, MSR_RAPL_POWER_UNIT_ADDR);
+    sPkg.energyStatus = MSR::readAndReturn<MSR_PKG_ENERGY_STATUS>(0, MSR_PKG_ENERGY_STATUS_ADDR);
+    sPkg.ecorePerfStats = MSR::readAndReturn<IA32_PERF_STATUS>(0, IA32_PERF_STATUS_ADDR);
+    sPkg.ecorePerfStats = MSR::readAndReturn<IA32_PERF_STATUS>(eCoreOffset, IA32_PERF_STATUS_ADDR);
+    sPkg.tempTarget = MSR::readAndReturn<MSR_TEMPERATURE_TARGET>(0, MSR_TEMPERATURE_TARGET_ADDR);
+    sPkg.packageTherm = MSR::readAndReturn<IA32_PACKAGE_THERM_STATUS>(0, IA32_PACKAGE_THERM_STATUS_ADDR);
+
+    return sPkg;
 }
 
 IMT_ErrCode MsrOps::readPresets(
@@ -163,10 +197,6 @@ IMT_ErrCode MsrOps::readPresets(
     for (auto& [key, value] : j.items()) {
         outPresets->insert(std::make_pair(key, SetupPackage{value}));
     }
-
-    // const std::string idx = std::to_string(presetIndex);
-    // if (!force && j.contains(idx))
-    //     return IMT_ErrCode::IndexOccupied;
 
     return IMT_ErrCode::OK;
 }

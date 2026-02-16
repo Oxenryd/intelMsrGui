@@ -69,6 +69,10 @@ enum class ArgType : uint8_t {
     RingMin = 120,
     RingMax,
 
+    Json = 192,
+    ReadAll = 193,
+    Status = 194,
+
     Unknown = 255
 };
 
