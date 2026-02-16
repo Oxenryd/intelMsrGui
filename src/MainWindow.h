@@ -54,12 +54,14 @@ private:
     void init();
     void checkPresetAutostart();
     bool validateEntries(SetupPackage* outPkg) const;
-    void setUiElementsFromData(const SetupPackage& pkg) const;
+    void setUiElementsFromData(const SetupPackage& pkg, bool updateVfFreqs = true) const;
     void updateStatString();
     void readPresets();
     void updateAutostartCheck() const;
     static bool getAutostartPreset(QString* outStr);
     static bool setAutostartPreset(const QString& presetName);
+
+    void getPackSetUI() const;
 
     IMT_ErrCode sendSettingsPackage(const SetupPackage& pkg);
     static bool getSettingsPackage(SetupPackage* outPkg);

@@ -241,9 +241,10 @@ void MainWindow::init() {
         onPresetComboClicked(index);
     });
 
-    SetupPackage sPack{};
-    getSettingsPackage(&sPack);
-    setUiElementsFromData(sPack);
+    getPackSetUI();
+    // SetupPackage sPack{};
+    // getSettingsPackage(&sPack);
+    // setUiElementsFromData(sPack);
     for (int i = 0; i < 6; ++i) {
         m_offsetLabels[i]->setText(QString::number(m_offsetSliders[i]->value() / 10, 'f', 1));
     }
@@ -268,13 +269,13 @@ void MainWindow::checkPresetAutostart() {
     for (auto& pair : m_presetMap) {
         if (pStr == pair.first) {
             sendSettingsPackage(pair.second);
-            setUiElementsFromData(pair.second);
+            getPackSetUI();
             break;
         }
     }
 }
 
-void MainWindow::setUiElementsFromData(const SetupPackage& pkg) const {
+void MainWindow::setUiElementsFromData(const SetupPackage& pkg, const bool updateVfFreqs) const {
 
     const auto pGroup = pkg.getPCoreRatioGroups();
     const auto eGroup = pkg.getECoreRatioGroups();
@@ -282,16 +283,16 @@ void MainWindow::setUiElementsFromData(const SetupPackage& pkg) const {
         m_pCoreEdits[i]->setText(QString::number(pGroup[i]));
         m_eCoreEdits[i]->setText(QString::number(eGroup[i]));
     }
-    auto vf_points = pkg.getVfCoreOffsetPoints();
+
+
+    const auto vf_points = pkg.getVfCoreOffsetPoints();
     for (int i = 0; i < 11; ++i) {
-        //const auto result =
-        //    std::bit_cast<OcMailbox::OC_MAILBOX_MSR, uint64_t>(vf_points[i]);
-        //const double offset = OcMailbox::convertOffsetFromRaw(result.VF.Offset);
-        //m_vfPoints[i]->setText(QString::number(result.VF.PointFrequency * 100));
-        m_vfPoints[i]->setText(QString::number(pkg.VF_CoreFreqs[i] * 100));
+        if (updateVfFreqs)
+            m_vfPoints[i]->setText(QString::number(pkg.VF_CoreFreqs[i] * 100));
         m_vfSliders[i]->setValue(static_cast<int>(vf_points[i] * 10));
         m_vfEdits[i]->setText(QString::number(vf_points[i], 'f', 1));
     }
+
 
     ui->ringMaxEdit->setText(QString::number(pkg.RingMax.getValue()));
     ui->ringMinEdit->setText(QString::number(pkg.RingMin.getValue()));
@@ -315,7 +316,7 @@ void MainWindow::setUiElementsFromData(const SetupPackage& pkg) const {
 void MainWindow::updateStatString() {
 
     // Find physical cpus
-    unsigned int logicalCores = std::thread::hardware_concurrency();
+    static unsigned int logicalCores = std::thread::hardware_concurrency();
     if (logicalCores == 0) {
         QMessageBox::critical(nullptr,
                       "IntelMsrGui",
@@ -324,36 +325,38 @@ void MainWindow::updateStatString() {
         return;
     }
 
-    std::vector<int> physicalCores;
-    for (int i = 0; i < logicalCores; i++) {
-        std::filesystem::path dir = std::format("/dev/cpu/{}", i);
-        if (std::filesystem::exists(dir) && std::filesystem::is_directory(dir)) {
-            physicalCores.push_back(i);
-        }
-    }
-
-    // Find which are P-Cores / E-Cores
-    if (m_pCores.empty()) {
-        m_pCores.clear();
-        m_eCores.clear();
-        for (auto i : physicalCores) {
-            cpu_set_t set{};
-            CPU_ZERO(&set); CPU_SET(i, &set);
-            if (sched_setaffinity(0, sizeof(set), &set) != 0) { perror("affinity"); std::exit(1); }
-
-            unsigned eax, ebx, ecx, edx;
-            if (!__get_cpuid_count(0x1A, 0, &eax, &ebx, &ecx, &edx)) {
-                m_pCores.push_back(i);
-                continue;
+    static std::vector<int> physicalCores;
+    if (physicalCores.empty()) {
+        for (int i = 0; i < logicalCores; i++) {
+            std::filesystem::path dir = std::format("/dev/cpu/{}", i);
+            if (std::filesystem::exists(dir) && std::filesystem::is_directory(dir)) {
+                physicalCores.push_back(i);
             }
+        }
+        // Find which are P-Cores / E-Cores
+        if (m_pCores.empty()) {
+            m_pCores.clear();
+            m_eCores.clear();
+            for (auto i : physicalCores) {
+                cpu_set_t set{};
+                CPU_ZERO(&set); CPU_SET(i, &set);
+                if (sched_setaffinity(0, sizeof(set), &set) != 0) { perror("affinity"); std::exit(1); }
 
-            auto core_type = static_cast<uint8_t>(eax >> 24);
-            if (core_type == 0x20)
-                m_eCores.push_back(i);
-            else
-                m_pCores.push_back(i);
+                unsigned eax, ebx, ecx, edx;
+                if (!__get_cpuid_count(0x1A, 0, &eax, &ebx, &ecx, &edx)) {
+                    m_pCores.push_back(i);
+                    continue;
+                }
+
+                const auto core_type = static_cast<uint8_t>(eax >> 24);
+                if (core_type == 0x20)
+                    m_eCores.push_back(i);
+                else
+                    m_pCores.push_back(i);
+            }
         }
     }
+
 
     StatusPackage pkg{};
     getStatusPackage(&pkg);
@@ -373,8 +376,8 @@ void MainWindow::updateStatString() {
 void MainWindow::readPresets() {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     if (!QDir().mkpath(dir)) {
-        auto errStr = std::format("Could not create directory: {}", dir.toStdString());
-        auto qErr = QString{errStr.c_str()};
+        const auto errStr = std::format("Could not create directory: {}", dir.toStdString());
+        const auto qErr = QString{errStr.c_str()};
         QMessageBox::critical(nullptr,
               "IntelMsrGui",
               qErr);
@@ -459,6 +462,17 @@ bool MainWindow::setAutostartPreset(const QString &presetName) {
     outFile << presetName.toStdString();
 
     return true;
+}
+
+void MainWindow::getPackSetUI() const {
+    SetupPackage sPack{};
+    if (!getSettingsPackage(&sPack)) {
+        QMessageBox::critical(nullptr,
+        "IntelMsrGui",
+        "Failed to read from CLI tool.");
+        return;
+    }
+    setUiElementsFromData(sPack);
 }
 
 
@@ -573,15 +587,7 @@ void MainWindow::onApplyPressed() {
             "IntelMsrGui",
             "MSRs not written correctly.");
         }
-        //const SetupPackage sPack = MsrOps::readCurrentAsPackage();
-        SetupPackage sPack{};
-        if (!getSettingsPackage(&sPack)) {
-            QMessageBox::critical(nullptr,
-            "IntelMsrGui",
-            "Failed to read from CLI tool.");
-            return;
-        }
-        setUiElementsFromData(sPack);
+        //getPackSetUI();
     } else
         QMessageBox::critical(nullptr,
         "IntelMsrGui",
@@ -621,7 +627,7 @@ void MainWindow::onSavePressed() const {
              "Could not write preset directory.");
         return;
     }
-    QString filePath = dir + "/preset.conf";
+    const QString filePath = dir + "/preset.conf";
     if (MsrOps::saveCurrentSetting(                                 // TODO!
         filePath.toStdString(),
         ui->presetNameEdit->text().toStdString(),
@@ -650,14 +656,14 @@ void MainWindow::onDeletePressed() const {
     }
 }
 
-void MainWindow::onPresetComboClicked(int index) const {
+void MainWindow::onPresetComboClicked(const int index) const {
     if (index == -1)
         return;
 
     ui->presetCombo->setCurrentIndex(index);
     const std::string str = ui->presetCombo->currentText().toStdString();
     const SetupPackage pkg = m_presetMap.at(str);
-    setUiElementsFromData(pkg);
+    setUiElementsFromData(pkg, false);
     updateAutostartCheck();
 }
 
